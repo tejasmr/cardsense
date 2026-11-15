@@ -524,6 +524,9 @@ async function loadCatalog() {
       }
     } catch (e) {}
 
+    // Sort cards alphabetically by name
+    catalogData.cards.sort((a, b) => a.name.localeCompare(b.name));
+
     populateBankFilter();
     document.getElementById("totalCardsCount").innerText = catalogData.cards.length;
 
@@ -560,7 +563,8 @@ function renderCardSelectionList() {
   const searchTerm = (document.getElementById("cardSearchInput")?.value || "").toLowerCase();
   const bankTerm = document.getElementById("bankFilter")?.value || "";
 
-  catalogData.cards.forEach(card => {
+  const sortedCards = [...catalogData.cards].sort((a, b) => a.name.localeCompare(b.name));
+  sortedCards.forEach(card => {
     const matchesSearch = card.name.toLowerCase().includes(searchTerm) || card.bank.toLowerCase().includes(searchTerm);
     const matchesBank = !bankTerm || card.bank === bankTerm;
 
@@ -1056,7 +1060,8 @@ function renderFullCatalog() {
   const search = (document.getElementById("catalogSearch")?.value || "").toLowerCase();
   container.innerHTML = "";
 
-  catalogData.cards.forEach(card => {
+  const sortedCards = [...catalogData.cards].sort((a, b) => a.name.localeCompare(b.name));
+  sortedCards.forEach(card => {
     if (search && !card.name.toLowerCase().includes(search) && !card.bank.toLowerCase().includes(search)) {
       return;
     }
@@ -1197,6 +1202,7 @@ async function saveCustomCard(e) {
 
   // Add to local catalog and storage
   catalogData.cards.push(cardPayload);
+  catalogData.cards.sort((a, b) => a.name.localeCompare(b.name));
   try {
     const savedCustom = JSON.parse(localStorage.getItem("cardsense_custom_cards") || "[]");
     savedCustom.push(cardPayload);
