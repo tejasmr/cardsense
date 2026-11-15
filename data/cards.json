@@ -12,7 +12,7 @@
       "joining_fee": 12500,
       "is_ltf": false,
       "reward_type": "points",
-      "point_value_inr": 1.0,
+      "point_value_inr": 1,
       "base_reward_rate": 0.0333,
       "category_rates": {
         "travel_flights_hotels": 0.1666,
@@ -26,7 +26,9 @@
       "category_caps_monthly": {
         "travel_flights_hotels": 15000
       },
-      "category_exclusions": ["fuel"],
+      "category_exclusions": [
+        "fuel"
+      ],
       "overall_monthly_reward_cap": null,
       "milestones": [],
       "perks": {
@@ -61,7 +63,7 @@
       "joining_fee": 999,
       "is_ltf": false,
       "reward_type": "cashback",
-      "point_value_inr": 1.0,
+      "point_value_inr": 1,
       "base_reward_rate": 0.01,
       "category_rates": {
         "online_shopping": 0.05,
@@ -79,7 +81,10 @@
         "groceries": 5000,
         "movies_entertainment": 5000
       },
-      "category_exclusions": ["fuel", "utilities_bills"],
+      "category_exclusions": [
+        "fuel",
+        "utilities_bills"
+      ],
       "overall_monthly_reward_cap": 5000,
       "milestones": [],
       "perks": {
@@ -114,7 +119,7 @@
       "joining_fee": 0,
       "is_ltf": true,
       "reward_type": "cashback",
-      "point_value_inr": 1.0,
+      "point_value_inr": 1,
       "base_reward_rate": 0.01,
       "category_rates": {
         "online_shopping": 0.05,
@@ -126,7 +131,9 @@
         "general_offline": 0.01
       },
       "category_caps_monthly": {},
-      "category_exclusions": ["fuel"],
+      "category_exclusions": [
+        "fuel"
+      ],
       "overall_monthly_reward_cap": null,
       "milestones": [],
       "perks": {
@@ -161,12 +168,12 @@
       "joining_fee": 500,
       "is_ltf": false,
       "reward_type": "cashback",
-      "point_value_inr": 1.0,
+      "point_value_inr": 1,
       "base_reward_rate": 0.01,
       "category_rates": {
-        "utilities_bills": 0.10,
-        "dining_food_delivery": 0.10,
-        "groceries": 0.10,
+        "utilities_bills": 0.1,
+        "dining_food_delivery": 0.1,
+        "groceries": 0.1,
         "online_shopping": 0.01,
         "travel_flights_hotels": 0.01,
         "movies_entertainment": 0.01,
@@ -177,7 +184,9 @@
         "dining_food_delivery": 500,
         "groceries": 500
       },
-      "category_exclusions": ["fuel"],
+      "category_exclusions": [
+        "fuel"
+      ],
       "overall_monthly_reward_cap": null,
       "milestones": [],
       "perks": {
@@ -212,11 +221,11 @@
       "joining_fee": 500,
       "is_ltf": false,
       "reward_type": "cashback",
-      "point_value_inr": 1.0,
+      "point_value_inr": 1,
       "base_reward_rate": 0.01,
       "category_rates": {
-        "dining_food_delivery": 0.10,
-        "groceries": 0.10,
+        "dining_food_delivery": 0.1,
+        "groceries": 0.1,
         "online_shopping": 0.05,
         "utilities_bills": 0.01,
         "travel_flights_hotels": 0.01,
@@ -228,7 +237,9 @@
         "groceries": 1500,
         "online_shopping": 1500
       },
-      "category_exclusions": ["fuel"],
+      "category_exclusions": [
+        "fuel"
+      ],
       "overall_monthly_reward_cap": null,
       "milestones": [],
       "perks": {
@@ -263,10 +274,10 @@
       "joining_fee": 1499,
       "is_ltf": false,
       "reward_type": "points",
-      "point_value_inr": 1.0,
+      "point_value_inr": 1,
       "base_reward_rate": 0.015,
       "category_rates": {
-        "groceries": 0.10,
+        "groceries": 0.1,
         "online_shopping": 0.05,
         "travel_flights_hotels": 0.05,
         "dining_food_delivery": 0.015,
@@ -275,7 +286,9 @@
         "general_offline": 0.015
       },
       "category_caps_monthly": {},
-      "category_exclusions": ["fuel"],
+      "category_exclusions": [
+        "fuel"
+      ],
       "overall_monthly_reward_cap": null,
       "milestones": [],
       "perks": {
@@ -310,7 +323,7 @@
       "joining_fee": 2500,
       "is_ltf": false,
       "reward_type": "points",
-      "point_value_inr": 0.50,
+      "point_value_inr": 0.5,
       "base_reward_rate": 0.0133,
       "category_rates": {
         "travel_flights_hotels": 0.0666,
@@ -324,7 +337,9 @@
       "category_caps_monthly": {
         "travel_flights_hotels": 5000
       },
-      "category_exclusions": ["fuel"],
+      "category_exclusions": [
+        "fuel"
+      ],
       "overall_monthly_reward_cap": null,
       "milestones": [
         {
@@ -381,7 +396,7 @@
       "joining_fee": 1000,
       "is_ltf": false,
       "reward_type": "cashback",
-      "point_value_inr": 1.0,
+      "point_value_inr": 1,
       "base_reward_rate": 0.01,
       "category_rates": {
         "online_shopping": 0.05,
@@ -399,7 +414,10 @@
         "groceries": 1000,
         "movies_entertainment": 1000
       },
-      "category_exclusions": ["fuel", "utilities_bills"],
+      "category_exclusions": [
+        "fuel",
+        "utilities_bills"
+      ],
       "overall_monthly_reward_cap": 2000,
       "milestones": [
         {
@@ -454,7 +472,9 @@
         "general_offline": 0.01
       },
       "category_caps_monthly": {},
-      "category_exclusions": ["fuel"],
+      "category_exclusions": [
+        "fuel"
+      ],
       "overall_monthly_reward_cap": null,
       "milestones": [],
       "perks": {
@@ -489,10 +509,10 @@
       "joining_fee": 5000,
       "is_ltf": false,
       "reward_type": "miles",
-      "point_value_inr": 1.0,
+      "point_value_inr": 1,
       "base_reward_rate": 0.04,
       "category_rates": {
-        "travel_flights_hotels": 0.10,
+        "travel_flights_hotels": 0.1,
         "dining_food_delivery": 0.04,
         "groceries": 0.04,
         "online_shopping": 0.04,
@@ -503,7 +523,9 @@
       "category_caps_monthly": {
         "travel_flights_hotels": 10000
       },
-      "category_exclusions": ["fuel"],
+      "category_exclusions": [
+        "fuel"
+      ],
       "overall_monthly_reward_cap": null,
       "milestones": [
         {
@@ -560,7 +582,7 @@
       "joining_fee": 3500,
       "is_ltf": false,
       "reward_type": "points",
-      "point_value_inr": 0.50,
+      "point_value_inr": 0.5,
       "base_reward_rate": 0.01,
       "category_rates": {
         "travel_flights_hotels": 0.01,
@@ -572,7 +594,9 @@
         "general_offline": 0.01
       },
       "category_caps_monthly": {},
-      "category_exclusions": ["fuel"],
+      "category_exclusions": [
+        "fuel"
+      ],
       "overall_monthly_reward_cap": null,
       "milestones": [
         {
@@ -622,7 +646,7 @@
       "joining_fee": 499,
       "is_ltf": false,
       "reward_type": "cashback",
-      "point_value_inr": 1.0,
+      "point_value_inr": 1,
       "base_reward_rate": 0.015,
       "category_rates": {
         "utilities_bills": 0.05,
@@ -637,7 +661,9 @@
         "utilities_bills": 500,
         "dining_food_delivery": 500
       },
-      "category_exclusions": ["fuel"],
+      "category_exclusions": [
+        "fuel"
+      ],
       "overall_monthly_reward_cap": null,
       "milestones": [],
       "perks": {
@@ -672,11 +698,11 @@
       "joining_fee": 999,
       "is_ltf": false,
       "reward_type": "cashback",
-      "point_value_inr": 1.0,
+      "point_value_inr": 1,
       "base_reward_rate": 0.015,
       "category_rates": {
-        "dining_food_delivery": 0.10,
-        "groceries": 0.10,
+        "dining_food_delivery": 0.1,
+        "groceries": 0.1,
         "online_shopping": 0.015,
         "utilities_bills": 0.015,
         "travel_flights_hotels": 0.015,
@@ -687,7 +713,9 @@
         "dining_food_delivery": 1000,
         "groceries": 1000
       },
-      "category_exclusions": ["fuel"],
+      "category_exclusions": [
+        "fuel"
+      ],
       "overall_monthly_reward_cap": null,
       "milestones": [],
       "perks": {
@@ -722,7 +750,7 @@
       "joining_fee": 1000,
       "is_ltf": false,
       "reward_type": "points",
-      "point_value_inr": 0.50,
+      "point_value_inr": 0.5,
       "base_reward_rate": 0.01,
       "category_rates": {
         "dining_food_delivery": 0.01,
@@ -734,7 +762,9 @@
         "general_offline": 0.01
       },
       "category_caps_monthly": {},
-      "category_exclusions": ["fuel"],
+      "category_exclusions": [
+        "fuel"
+      ],
       "overall_monthly_reward_cap": null,
       "milestones": [
         {
@@ -796,7 +826,9 @@
         "general_offline": 0.0075
       },
       "category_caps_monthly": {},
-      "category_exclusions": ["fuel"],
+      "category_exclusions": [
+        "fuel"
+      ],
       "overall_monthly_reward_cap": null,
       "milestones": [
         {
@@ -827,6 +859,241 @@
         "2 complimentary golf rounds per month"
       ],
       "source_url": "https://www.idfcfirstbank.com/credit-card/wealth"
+    },
+    {
+      "id": "au_lit",
+      "name": "AU Bank LIT Credit Card",
+      "bank": "AU Small Finance Bank",
+      "network": "Visa / RuPay",
+      "tier": "Customizable",
+      "annual_fee": 0,
+      "gst_rate": 0.18,
+      "fee_waiver_spend_annual": null,
+      "joining_fee": 0,
+      "is_ltf": true,
+      "reward_type": "cashback",
+      "point_value_inr": 1,
+      "base_reward_rate": 0.0025,
+      "category_rates": {
+        "dining_food_delivery": 0.05,
+        "groceries": 0.05,
+        "online_shopping": 0.05,
+        "general_offline": 0.01,
+        "travel_flights_hotels": 0.0025,
+        "utilities_bills": 0.0025,
+        "movies_entertainment": 0.0025
+      },
+      "category_caps_monthly": {
+        "dining_food_delivery": 500,
+        "groceries": 500,
+        "online_shopping": 500
+      },
+      "category_exclusions": [
+        "fuel",
+        "rent",
+        "wallet"
+      ],
+      "overall_monthly_reward_cap": null,
+      "milestones": [],
+      "perks": {
+        "domestic_lounges_per_year": 4,
+        "railway_lounges_per_year": 0,
+        "movie_bogo_monthly_max_discount": 0,
+        "movie_bogo_tickets_per_month": 0,
+        "golf_rounds_per_year": 0,
+        "fuel_surcharge_waiver": true,
+        "fuel_surcharge_monthly_cap": 150,
+        "dining_membership_name": null,
+        "dining_membership_value": 0
+      },
+      "rupay_upi_enabled": true,
+      "key_highlights": [
+        "Lifetime Free (LTF) customizable credit card",
+        "Pick-and-choose 5% cashback on Dining, Groceries, & Online Shopping",
+        "Up to 4 Domestic Airport Lounge visits/year (1/quarter via travel pack)",
+        "RuPay UPI scan-to-pay enabled"
+      ],
+      "source_url": "https://www.aubank.in/personal-banking/credit-cards/lit-credit-card"
+    },
+    {
+      "id": "axis_privilege_visa",
+      "name": "Axis Bank Privilege Credit Card (Visa)",
+      "bank": "Axis Bank",
+      "network": "Visa",
+      "tier": "Mid-Premium",
+      "annual_fee": 1500,
+      "gst_rate": 0.18,
+      "fee_waiver_spend_annual": 500000,
+      "joining_fee": 1500,
+      "is_ltf": false,
+      "reward_type": "points",
+      "point_value_inr": 0.2,
+      "base_reward_rate": 0.01,
+      "category_rates": {
+        "travel_flights_hotels": 0.02,
+        "dining_food_delivery": 0.02,
+        "online_shopping": 0.01,
+        "groceries": 0.01,
+        "movies_entertainment": 0.01,
+        "general_offline": 0.01
+      },
+      "category_caps_monthly": {},
+      "category_exclusions": [
+        "fuel",
+        "rent",
+        "wallet",
+        "utilities_bills"
+      ],
+      "overall_monthly_reward_cap": null,
+      "milestones": [
+        {
+          "spend_threshold_annual": 250000,
+          "reward_type": "points",
+          "reward_value": 10000,
+          "description": "10,000 Bonus EDGE Reward points (worth ₹2,000) on spending ₹2.5L/year"
+        }
+      ],
+      "perks": {
+        "domestic_lounges_per_year": 8,
+        "railway_lounges_per_year": 0,
+        "movie_bogo_monthly_max_discount": 250,
+        "movie_bogo_tickets_per_month": 2,
+        "golf_rounds_per_year": 0,
+        "fuel_surcharge_waiver": true,
+        "fuel_surcharge_monthly_cap": 400,
+        "dining_membership_name": "Axis Dining Delights (up to 20% off)",
+        "dining_membership_value": 1500
+      },
+      "rupay_upi_enabled": false,
+      "key_highlights": [
+        "8 Complimentary Domestic Airport Lounge visits/year (2 per quarter)",
+        "Buy-1-Get-1 Free Movie ticket up to ₹250/month via District / BookMyShow",
+        "10,000 bonus EDGE Reward points (worth ₹2,000) on ₹2.5 Lakhs annual spend",
+        "Annual fee of ₹1,500 waived on spending ₹5 Lakhs in anniversary year"
+      ],
+      "source_url": "https://www.axisbank.com/retail/cards/credit-card/privilege-credit-card"
+    },
+    {
+      "id": "yes_bank_uni_nx_wave",
+      "name": "Uni YES Bank Credit Card (NX Wave)",
+      "bank": "YES Bank",
+      "network": "Visa / RuPay",
+      "tier": "Fintech Entry",
+      "annual_fee": 499,
+      "gst_rate": 0.18,
+      "fee_waiver_spend_annual": 50000,
+      "joining_fee": 0,
+      "is_ltf": false,
+      "reward_type": "cashback",
+      "point_value_inr": 1,
+      "base_reward_rate": 0.01,
+      "category_rates": {
+        "dining_food_delivery": 0.01,
+        "groceries": 0.01,
+        "online_shopping": 0.01,
+        "utilities_bills": 0.01,
+        "travel_flights_hotels": 0.01,
+        "movies_entertainment": 0.01,
+        "general_offline": 0.01
+      },
+      "category_caps_monthly": {},
+      "category_exclusions": [
+        "fuel",
+        "rent",
+        "wallet"
+      ],
+      "overall_monthly_reward_cap": null,
+      "milestones": [],
+      "perks": {
+        "domestic_lounges_per_year": 0,
+        "railway_lounges_per_year": 0,
+        "movie_bogo_monthly_max_discount": 0,
+        "movie_bogo_tickets_per_month": 0,
+        "golf_rounds_per_year": 0,
+        "fuel_surcharge_waiver": true,
+        "fuel_surcharge_monthly_cap": 250,
+        "dining_membership_name": null,
+        "dining_membership_value": 0
+      },
+      "rupay_upi_enabled": true,
+      "key_highlights": [
+        "Flat unlimited 1% cashback on retail transactions",
+        "Zero Forex Markup Fee (0% markup on international transactions)",
+        "Annual fee of ₹499 waived on spending ₹50,000/year",
+        "Available in RuPay variant for UPI QR scan-to-pay"
+      ],
+      "source_url": "https://www.yesbank.in/personal-banking/cards/credit-cards/uni-yes-bank-credit-card"
+    },
+    {
+      "id": "hdfc_marriott_bonvoy",
+      "name": "Marriott Bonvoy HDFC Bank Credit Card",
+      "bank": "HDFC Bank",
+      "network": "Diners Club",
+      "tier": "Super Premium Hospitality",
+      "annual_fee": 3000,
+      "gst_rate": 0.18,
+      "fee_waiver_spend_annual": null,
+      "joining_fee": 3000,
+      "is_ltf": false,
+      "reward_type": "points",
+      "point_value_inr": 0.6,
+      "base_reward_rate": 0.0133,
+      "category_rates": {
+        "travel_flights_hotels": 0.0533,
+        "dining_food_delivery": 0.0267,
+        "movies_entertainment": 0.0267,
+        "online_shopping": 0.0133,
+        "groceries": 0.0133,
+        "utilities_bills": 0.0133,
+        "general_offline": 0.0133
+      },
+      "category_caps_monthly": {},
+      "category_exclusions": [
+        "fuel",
+        "rent",
+        "wallet"
+      ],
+      "overall_monthly_reward_cap": null,
+      "milestones": [
+        {
+          "spend_threshold_annual": 600000,
+          "reward_type": "voucher",
+          "reward_value": 9000,
+          "description": "1 Additional Free Night Award (up to 15,000 points ~ ₹9,000) on ₹6L spend"
+        },
+        {
+          "spend_threshold_annual": 900000,
+          "reward_type": "voucher",
+          "reward_value": 9000,
+          "description": "1 Additional Free Night Award on ₹9L annual spend"
+        },
+        {
+          "spend_threshold_annual": 1500000,
+          "reward_type": "voucher",
+          "reward_value": 9000,
+          "description": "1 Additional Free Night Award on ₹15L annual spend"
+        }
+      ],
+      "perks": {
+        "domestic_lounges_per_year": 12,
+        "railway_lounges_per_year": 0,
+        "movie_bogo_monthly_max_discount": 0,
+        "movie_bogo_tickets_per_month": 0,
+        "golf_rounds_per_year": 8,
+        "fuel_surcharge_waiver": true,
+        "fuel_surcharge_monthly_cap": 250,
+        "dining_membership_name": "Annual 1 Free Night Award (15k pts) + Silver Elite Status",
+        "dining_membership_value": 9000
+      },
+      "rupay_upi_enabled": false,
+      "key_highlights": [
+        "1 Free Night Award (up to 15,000 points ~ ₹9,000) every year upon fee payment",
+        "12 Complimentary Domestic Airport Lounge Visits per calendar year",
+        "12 Complimentary International Airport Lounge Visits per calendar year",
+        "Marriott Bonvoy Silver Elite status & 10 Elite Night Credits annually",
+        "Earn up to 3 additional Free Night Awards on annual spend milestones"
+      ],
+      "source_url": "https://www.hdfcbank.com/personal/pay/cards/credit-cards/marriott-bonvoy-hdfc-bank-credit-card"
     }
   ]
 }
