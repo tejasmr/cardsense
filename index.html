@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Credit Card Portfolio Analyzer (India Domestic)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="./static/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Google Identity Services SDK -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans antialiased">
+
+  <!-- Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center text-white shadow-md shadow-indigo-200">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
+            CardSense India
+            <span class="text-xs bg-indigo-100 text-indigo-700 font-semibold px-2 py-0.5 rounded-full">Domestic INR</span>
+          </h1>
+          <p class="text-xs text-slate-500 font-medium">Benefits, Costs (18% GST), Milestones & Portfolio Gap Analyzer</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <div class="dropdown relative inline-block text-left">
+          <button id="presetBtn" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors flex items-center gap-1.5 border border-slate-200">
+            <span>Spend Presets</span>
+            <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+          </button>
+          <div id="presetMenu" class="hidden absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-lg border border-slate-200 py-1.5 z-40">
+            <button onclick="applyPreset('entry')" class="w-full text-left px-3.5 py-2 text-xs font-medium text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
+              <span class="block font-semibold">Starter / Budget</span>
+              <span class="text-[11px] text-slate-400">₹25,000 / month domestic</span>
+            </button>
+            <button onclick="applyPreset('standard')" class="w-full text-left px-3.5 py-2 text-xs font-medium text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
+              <span class="block font-semibold">Mid-Tier Professional</span>
+              <span class="text-[11px] text-slate-400">₹50,000 / month domestic</span>
+            </button>
+            <button onclick="applyPreset('high')" class="w-full text-left px-3.5 py-2 text-xs font-medium text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
+              <span class="block font-semibold">High Spender / Frequent Flyer</span>
+              <span class="text-[11px] text-slate-400">₹1,20,000 / month domestic</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Google User Account Section -->
+        <div id="userAuthSection" class="flex items-center gap-2 border-l border-slate-200 pl-2">
+          <!-- Sign in with Google Button -->
+          <button onclick="openAuthModal()" id="loginBtn" class="px-3 py-1.5 text-xs font-bold rounded-lg bg-white text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2 border border-slate-300 shadow-2xs">
+            <svg class="w-4 h-4" viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+            </svg>
+            <span>Sign in with Google</span>
+          </button>
+
+          <!-- Logged in State -->
+          <div id="userLoggedInWidget" class="hidden flex items-center gap-2">
+            <button onclick="saveCurrentProfileToDb()" id="saveProfileBtn" title="Sync cards, spend, and weights to your Google Sheet" class="px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors flex items-center gap-1 border border-emerald-200">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+              <span>Save to Sheet</span>
+            </button>
+            <button onclick="openSheetModal()" title="Google Sheet Backend Settings & Allowlist" class="px-2 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors flex items-center gap-1 border border-slate-200">
+              <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              <span>Sheet Sync</span>
+            </button>
+            <div class="flex items-center gap-2 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200 text-xs font-medium text-slate-700">
+              <img id="userAvatarImg" src="" alt="avatar" class="w-5 h-5 rounded-full object-cover border border-slate-300 hidden">
+              <div id="userAvatarFallback" class="w-5 h-5 rounded-full bg-indigo-600 text-white font-black text-[10px] flex items-center justify-center">G</div>
+              <div class="flex flex-col text-left">
+                <span id="userNameDisplay" class="font-bold text-slate-900 leading-tight">Google User</span>
+                <span id="userEmailDisplay" class="text-[9px] text-slate-500 leading-tight">user@gmail.com</span>
+              </div>
+              <button onclick="handleLogout()" title="Sign Out" class="ml-1 text-slate-400 hover:text-rose-600 transition-colors">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <button onclick="openCustomCardModal()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-900 text-white hover:bg-slate-800 transition-colors flex items-center gap-1.5 shadow-xs">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          <span>Add Custom Card</span>
+        </button>
+
+        <button onclick="triggerAnalysis()" class="px-4 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-colors flex items-center gap-1.5 shadow-md shadow-indigo-100">
+          <svg class="w-3.5 h-3.5 animate-spin hidden" id="loadingSpinner" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"></circle><path fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" class="opacity-75"></path></svg>
+          <svg class="w-3.5 h-3.5" id="runIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          <span>Re-calculate</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Summary KPI Ribbon -->
+  <section class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white py-5 px-4 sm:px-6 lg:px-8 border-b border-indigo-900 shadow-inner">
+    <div class="max-w-7xl mx-auto grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-3">
+        <span class="text-[11px] uppercase tracking-wider text-slate-300 font-semibold block">Annual Spend</span>
+        <span id="kpiTotalSpend" class="text-lg font-extrabold text-white">₹0</span>
+        <span class="text-[10px] text-slate-400 block mt-0.5" id="kpiMonthlySpend">₹0 / month</span>
+      </div>
+
+      <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-3">
+        <span class="text-[11px] uppercase tracking-wider text-emerald-300 font-semibold block">Total Rewards</span>
+        <span id="kpiTotalRewards" class="text-lg font-extrabold text-emerald-400">₹0</span>
+        <span class="text-[10px] text-slate-400 block mt-0.5">Cashback & Points</span>
+      </div>
+
+      <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-3">
+        <span class="text-[11px] uppercase tracking-wider text-purple-300 font-semibold block">Weighted Perks</span>
+        <span id="kpiTotalPerks" class="text-lg font-extrabold text-purple-300">₹0</span>
+        <span class="text-[10px] text-slate-400 block mt-0.5">Lounge, Movies, Golf</span>
+      </div>
+
+      <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-3">
+        <span class="text-[11px] uppercase tracking-wider text-rose-300 font-semibold block">Effective Fees (GST)</span>
+        <span id="kpiTotalFees" class="text-lg font-extrabold text-rose-400">₹0</span>
+        <span class="text-[10px] text-slate-400 block mt-0.5" id="kpiWaiverCount">0 waived</span>
+      </div>
+
+      <div class="bg-indigo-500/20 backdrop-blur-md border border-indigo-400/40 rounded-xl p-3 col-span-2 sm:col-span-1 lg:col-span-2">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] uppercase tracking-wider text-indigo-200 font-bold block">Net Annual Value (ROI)</span>
+          <span id="kpiYieldBadge" class="text-xs bg-indigo-400/20 text-indigo-200 font-bold px-2 py-0.5 rounded-full border border-indigo-300/30">0.0% Yield</span>
+        </div>
+        <div class="flex items-baseline gap-2 mt-0.5">
+          <span id="kpiNetValue" class="text-2xl font-black text-emerald-300">₹0</span>
+          <span class="text-xs text-indigo-200/80">/ year</span>
+        </div>
+        <span class="text-[10px] text-indigo-200/70 block mt-0.5">Best-behavior category routing yield</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Navigation Tabs -->
+  <div class="bg-white border-b border-slate-200 sticky top-[61px] z-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <nav class="flex space-x-6 overflow-x-auto py-2" id="navTabs">
+        <button onclick="switchTab('tab-portfolio')" class="tab-btn active text-xs font-bold pb-2 border-b-2 border-indigo-600 text-indigo-600 flex items-center gap-1.5 whitespace-nowrap">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+          1. Portfolio & Spend
+        </button>
+
+        <button onclick="switchTab('tab-weights')" class="tab-btn text-xs font-semibold pb-2 border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-1.5 whitespace-nowrap">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+          2. Perk Weights & Valuation
+        </button>
+
+        <button onclick="switchTab('tab-quant')" class="tab-btn text-xs font-semibold pb-2 border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-1.5 whitespace-nowrap">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          3. Best Behavior Quantification
+        </button>
+
+        <button onclick="switchTab('tab-gaps')" class="tab-btn text-xs font-semibold pb-2 border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-1.5 whitespace-nowrap">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          4. Portfolio Gaps & Inefficiencies
+          <span id="gapsBadgeCount" class="ml-1 text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.2 rounded-full font-bold">0</span>
+        </button>
+
+        <button onclick="switchTab('tab-recommendations')" class="tab-btn text-xs font-semibold pb-2 border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-1.5 whitespace-nowrap">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+          5. Smart Recommendations & Replacements
+          <span id="recsBadgeCount" class="ml-1 text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.2 rounded-full font-bold">0</span>
+        </button>
+
+        <button onclick="switchTab('tab-catalog')" class="tab-btn text-xs font-semibold pb-2 border-b-2 border-transparent text-slate-500 hover:text-slate-800 flex items-center gap-1.5 whitespace-nowrap">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/></svg>
+          Card Catalog (<span id="totalCardsCount">0</span>)
+        </button>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- TAB 1: Portfolio & Spend Profile -->
+    <div id="tab-portfolio" class="tab-content block space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Left: Selected Cards List & Selector -->
+        <div class="lg:col-span-5 bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+            <div>
+              <h2 class="text-sm font-bold text-slate-900">Your Current Credit Cards</h2>
+              <p class="text-xs text-slate-500">Select the cards currently in your wallet</p>
+            </div>
+            <span id="selectedCardsCount" class="text-xs bg-indigo-50 text-indigo-700 font-bold px-2 py-0.5 rounded-full border border-indigo-100">0 selected</span>
+          </div>
+
+          <!-- Card Search & Filter -->
+          <div class="mb-3 flex gap-2">
+            <input type="text" id="cardSearchInput" placeholder="Search card by name or bank..." oninput="filterCardList()" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-800 placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500">
+            <select id="bankFilter" onchange="filterCardList()" class="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2 py-2 text-slate-700 focus:outline-hidden">
+              <option value="">All Banks</option>
+            </select>
+          </div>
+
+          <!-- Scrollable Card Selection Box -->
+          <div class="flex-1 overflow-y-auto max-h-[460px] pr-1 space-y-2" id="cardsSelectionContainer">
+            <!-- Dynamically populated -->
+          </div>
+
+          <div class="pt-4 border-t border-slate-100 mt-4 flex items-center justify-between text-xs text-slate-500">
+            <span>Want to test a card not listed?</span>
+            <button onclick="openCustomCardModal()" class="text-indigo-600 font-bold hover:underline">Create Custom Card &rarr;</button>
+          </div>
+        </div>
+
+        <!-- Right: Monthly Domestic Spend Profile -->
+        <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+            <div>
+              <h2 class="text-sm font-bold text-slate-900">Domestic Monthly Spend Breakdown</h2>
+              <p class="text-xs text-slate-500">Enter your average domestic monthly expenses in INR</p>
+            </div>
+            <div class="text-right">
+              <span class="text-xs text-slate-400 font-medium">Monthly Total:</span>
+              <span id="spendMonthlySum" class="text-sm font-black text-slate-900 block">₹0</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5" id="spendCategoriesContainer">
+            <!-- Dynamically populated spend category inputs -->
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+            <div class="text-xs text-slate-500">
+              Annual Spend: <span id="spendAnnualSum" class="font-bold text-slate-800">₹0</span>
+            </div>
+            <button onclick="triggerAnalysis()" class="px-4 py-2 text-xs font-bold rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 shadow-xs flex items-center gap-1.5">
+              <span>Run Analysis</span>
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: Perk Weights & Valuations -->
+    <div id="tab-weights" class="tab-content hidden space-y-6">
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-xs max-w-4xl mx-auto">
+        <div class="pb-4 border-b border-slate-100 mb-6 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h2 class="text-base font-bold text-slate-900">Personal Perk Valuation & Weights</h2>
+            <p class="text-xs text-slate-500">How much are non-cash benefits worth to you? Customize multipliers (0x = not used, 1x = standard, 2x = heavy user) and cash valuations.</p>
+          </div>
+          <button onclick="resetDefaultWeights()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200">Reset Defaults</button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          <!-- Airport Lounge -->
+          <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                Domestic Airport Lounge
+              </span>
+              <span id="loungeMultiplierLabel" class="text-xs font-extrabold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">1.0x</span>
+            </div>
+            <p class="text-[11px] text-slate-500">Multiplier based on how frequently you travel by air.</p>
+            <input type="range" id="w_lounge_mult" min="0" max="2" step="0.1" value="1.0" oninput="updateWeightLabels()" class="w-full accent-indigo-600">
+            <div class="flex items-center justify-between text-xs pt-1 border-t border-slate-200">
+              <span class="text-slate-500">Assumed Value / Visit (₹):</span>
+              <input type="number" id="w_lounge_val" value="1000" class="w-24 text-right text-xs border border-slate-200 rounded px-2 py-1 font-bold">
+            </div>
+          </div>
+
+          <!-- Movie BOGO -->
+          <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"/></svg>
+                Movie Buy-1-Get-1 (BMS / PVR)
+              </span>
+              <span id="movieMultiplierLabel" class="text-xs font-extrabold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md">1.0x</span>
+            </div>
+            <p class="text-[11px] text-slate-500">Do you regularly watch movies in theaters?</p>
+            <input type="range" id="w_movie_mult" min="0" max="2" step="0.1" value="1.0" oninput="updateWeightLabels()" class="w-full accent-rose-600">
+            <div class="flex items-center justify-between text-xs pt-1 border-t border-slate-200">
+              <span class="text-slate-500">Average Ticket Price Saved (₹):</span>
+              <input type="number" id="w_movie_val" value="250" class="w-24 text-right text-xs border border-slate-200 rounded px-2 py-1 font-bold">
+            </div>
+          </div>
+
+          <!-- Milestone Travel Vouchers -->
+          <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Milestone Travel & Taj Vouchers
+              </span>
+              <span id="voucherMultiplierLabel" class="text-xs font-extrabold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">0.85x</span>
+            </div>
+            <p class="text-[11px] text-slate-500">How much do you discount branded vouchers (IndiGo, Taj, Cleartrip) vs liquid cash?</p>
+            <input type="range" id="w_voucher_mult" min="0" max="1.5" step="0.05" value="0.85" oninput="updateWeightLabels()" class="w-full accent-emerald-600">
+            <div class="flex items-center justify-between text-xs pt-1 border-t border-slate-200">
+              <span class="text-slate-500">Cash Realization Ratio:</span>
+              <span class="font-bold text-slate-700" id="voucherRealizationTxt">85% of face value</span>
+            </div>
+          </div>
+
+          <!-- Golf Rounds -->
+          <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                Golf Rounds / Lessons
+              </span>
+              <span id="golfMultiplierLabel" class="text-xs font-extrabold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">1.0x</span>
+            </div>
+            <p class="text-[11px] text-slate-500">Set to 0x if you never play golf; 1x if you take full advantage.</p>
+            <input type="range" id="w_golf_mult" min="0" max="2" step="0.2" value="1.0" oninput="updateWeightLabels()" class="w-full accent-emerald-700">
+            <div class="flex items-center justify-between text-xs pt-1 border-t border-slate-200">
+              <span class="text-slate-500">Value per Round (₹):</span>
+              <input type="number" id="w_golf_val" value="1500" class="w-24 text-right text-xs border border-slate-200 rounded px-2 py-1 font-bold">
+            </div>
+          </div>
+
+          <!-- Dining Memberships -->
+          <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                Dining / Delivery Memberships (Swiggy One / EazyDiner)
+              </span>
+              <span id="diningMultiplierLabel" class="text-xs font-extrabold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md">1.0x</span>
+            </div>
+            <p class="text-[11px] text-slate-500">Value placed on bundled dining and delivery memberships.</p>
+            <input type="range" id="w_dining_mult" min="0" max="2" step="0.1" value="1.0" oninput="updateWeightLabels()" class="w-full accent-amber-600">
+          </div>
+
+          <!-- Fuel Surcharge -->
+          <div class="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                Fuel Surcharge Waiver Importance
+              </span>
+              <span id="fuelMultiplierLabel" class="text-xs font-extrabold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">1.0x</span>
+            </div>
+            <p class="text-[11px] text-slate-500">1% surcharge waiver valuation weight.</p>
+            <input type="range" id="w_fuel_mult" min="0" max="2" step="0.2" value="1.0" oninput="updateWeightLabels()" class="w-full accent-blue-600">
+          </div>
+
+        </div>
+
+        <div class="mt-6 flex justify-end">
+          <button onclick="triggerAnalysis()" class="px-5 py-2.5 text-xs font-bold rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 shadow-md">
+            Save Preferences & Re-calculate
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: Best Behavior Quantification Details -->
+    <div id="tab-quant" class="tab-content hidden space-y-6">
+
+      <!-- Spend Routing Breakdown (Which card to swipe where) -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+          <div>
+            <h2 class="text-sm font-bold text-slate-900">Optimal Spend Routing Strategy ("Best Behavior")</h2>
+            <p class="text-xs text-slate-500">The mathematical optimal card to use for each spend category to maximize returns</p>
+          </div>
+          <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">Max Yield Routing</span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead>
+              <tr class="border-b border-slate-200 text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
+                <th class="py-2.5 px-3">Category</th>
+                <th class="py-2.5 px-3">Monthly Spend</th>
+                <th class="py-2.5 px-3">Optimal Card to Swipe</th>
+                <th class="py-2.5 px-3">Effective Return Rate</th>
+                <th class="py-2.5 px-3 text-right">Monthly Reward</th>
+                <th class="py-2.5 px-3 text-right">Annual Reward</th>
+              </tr>
+            </thead>
+            <tbody id="routingTableBody" class="divide-y divide-slate-100">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Card-by-Card Financial Ledger -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+          <div>
+            <h2 class="text-sm font-bold text-slate-900">Card-by-Card Performance Ledger</h2>
+            <p class="text-xs text-slate-500">Gross rewards, milestones, perks value, fees + 18% GST, and net profit/loss per card</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="cardLedgerContainer">
+          <!-- Dynamically populated card cards -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TAB 4: Portfolio Gaps & Inefficiencies -->
+    <div id="tab-gaps" class="tab-content hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- Column 1: Category Coverage Gaps -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+              <h3 class="text-sm font-bold text-slate-900">Category Gaps</h3>
+            </div>
+            <span id="countCatGaps" class="text-xs bg-slate-100 text-slate-700 font-bold px-2 py-0.5 rounded-full">0</span>
+          </div>
+          <p class="text-xs text-slate-500 mb-3">High-spend domestic categories where your current cards yield sub-benchmark returns.</p>
+          <div id="catGapsList" class="space-y-3 flex-1 overflow-y-auto">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Column 2: Missing Perk Gaps -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+              <h3 class="text-sm font-bold text-slate-900">Missing Key Perks</h3>
+            </div>
+            <span id="countPerkGaps" class="text-xs bg-slate-100 text-slate-700 font-bold px-2 py-0.5 rounded-full">0</span>
+          </div>
+          <p class="text-xs text-slate-500 mb-3">High-value non-cash privileges absent in your portfolio (lounge, movie BOGO, UPI).</p>
+          <div id="perkGapsList" class="space-y-3 flex-1 overflow-y-auto">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Column 3: Fee Inefficiencies & Redundancy -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs flex flex-col">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+              <h3 class="text-sm font-bold text-slate-900">Fee Inefficiencies</h3>
+            </div>
+            <span id="countFeeGaps" class="text-xs bg-slate-100 text-slate-700 font-bold px-2 py-0.5 rounded-full">0</span>
+          </div>
+          <p class="text-xs text-slate-500 mb-3">Negative ROI cards, missed fee waiver thresholds, or idle fee-paying cards.</p>
+          <div id="feeGapsList" class="space-y-3 flex-1 overflow-y-auto">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB 5: Smart Recommendations & Replacements -->
+    <div id="tab-recommendations" class="tab-content hidden space-y-6">
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+          <div>
+            <h2 class="text-sm font-bold text-slate-900">Algorithm-Recommended Portfolio Upgrades</h2>
+            <p class="text-xs text-slate-500">Cards from the catalog simulated to provide maximum marginal net profit and eliminate your identified gaps</p>
+          </div>
+        </div>
+
+        <div id="recommendationsContainer" class="space-y-4">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 6: Card Catalog Explorer -->
+    <div id="tab-catalog" class="tab-content hidden space-y-6">
+      <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs">
+        <div class="flex flex-wrap items-center justify-between pb-3 border-b border-slate-100 gap-4 mb-4">
+          <div>
+            <h2 class="text-sm font-bold text-slate-900">Verified Indian Domestic Card Catalog</h2>
+            <p class="text-xs text-slate-500">Pre-loaded with verified fee waiver conditions, GST rules, milestone vouchers, and perks</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <input type="text" id="catalogSearch" placeholder="Search catalog..." oninput="filterCatalogCards()" class="text-xs bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-hidden">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="fullCatalogContainer">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Modal: Google Authentication -->
+  <div id="authModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 text-center">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-5">
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5" viewBox="0 0 24 24">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+          </svg>
+          <span class="text-sm font-bold text-slate-900">Google Authentication</span>
+        </div>
+        <button onclick="closeAuthModal()" class="text-slate-400 hover:text-slate-600 text-lg leading-none">&times;</button>
+      </div>
+
+      <div class="space-y-4">
+        <p class="text-xs text-slate-500 text-left">
+          Sign in with your Google Account to persist your credit cards, monthly domestic spend profile, and perk valuations in SQLite.
+        </p>
+
+        <!-- Google Identity Services Render Target -->
+        <div id="googleSignInButtonContainer" class="flex justify-center min-h-[44px]">
+          <!-- Injected via Google Identity Services if client ID exists -->
+        </div>
+
+        <div id="googleAuthError" class="hidden text-[11px] text-rose-600 font-semibold p-2.5 bg-rose-50 rounded-lg text-left"></div>
+
+        <!-- 1-Click Fast Google Sign-in Options -->
+        <div class="pt-3 border-t border-slate-100 space-y-2">
+          <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider text-left">Quick Google Sign-in</span>
+          
+          <button type="button" onclick="signInWithGoogleQuick('demo.user@gmail.com', 'Demo User', 'https://lh3.googleusercontent.com/a/default-user')" class="w-full py-2 px-3 rounded-xl bg-slate-50 hover:bg-indigo-50/60 border border-slate-200 hover:border-indigo-200 transition-colors flex items-center justify-between text-left">
+            <div class="flex items-center gap-2.5">
+              <div class="w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center">D</div>
+              <div>
+                <span class="block text-xs font-bold text-slate-900">Demo User</span>
+                <span class="block text-[10px] text-slate-400">demo.user@gmail.com</span>
+              </div>
+            </div>
+            <span class="text-[10px] font-bold text-indigo-600">Connect &rarr;</span>
+          </button>
+
+          <button type="button" onclick="promptCustomGoogleEmail()" class="w-full py-2 px-3 rounded-xl bg-slate-50 hover:bg-indigo-50/60 border border-slate-200 hover:border-indigo-200 transition-colors flex items-center justify-between text-left">
+            <div class="flex items-center gap-2.5">
+              <div class="w-6 h-6 rounded-full bg-emerald-600 text-white font-bold text-xs flex items-center justify-center">+</div>
+              <div>
+                <span class="block text-xs font-bold text-slate-900">Use Another Google Account</span>
+                <span class="block text-[10px] text-slate-400">Enter your Gmail / Google ID</span>
+              </div>
+            </div>
+            <span class="text-[10px] font-bold text-indigo-600">Enter &rarr;</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Add Custom Card -->
+  <div id="customCardModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+        <h3 class="text-sm font-bold text-slate-900">Define Custom Credit Card</h3>
+        <button onclick="closeCustomCardModal()" class="text-slate-400 hover:text-slate-600">&times;</button>
+      </div>
+
+      <form id="customCardForm" onsubmit="saveCustomCard(event)" class="space-y-4 text-xs">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Card Name *</label>
+            <input type="text" id="c_name" required placeholder="e.g., Kotak League Platinum" class="w-full border border-slate-200 rounded-lg p-2 focus:ring-1 focus:ring-indigo-500">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Bank Name *</label>
+            <input type="text" id="c_bank" required placeholder="e.g., Kotak Mahindra Bank" class="w-full border border-slate-200 rounded-lg p-2 focus:ring-1 focus:ring-indigo-500">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Annual Fee (pre-GST) ₹</label>
+            <input type="number" id="c_fee" value="500" class="w-full border border-slate-200 rounded-lg p-2">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Waiver Spend Target ₹</label>
+            <input type="number" id="c_waiver" value="100000" placeholder="e.g. 100000" class="w-full border border-slate-200 rounded-lg p-2">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Lifetime Free?</label>
+            <select id="c_ltf" class="w-full border border-slate-200 rounded-lg p-2">
+              <option value="false">No (Fee applies)</option>
+              <option value="true">Yes (Lifetime Free)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Base Reward Rate %</label>
+            <input type="number" id="c_base_rate" step="0.1" value="1.0" class="w-full border border-slate-200 rounded-lg p-2">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Network</label>
+            <select id="c_network" class="w-full border border-slate-200 rounded-lg p-2">
+              <option value="Visa">Visa</option>
+              <option value="Mastercard">Mastercard</option>
+              <option value="RuPay">RuPay (UPI)</option>
+              <option value="Amex">American Express</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Reward Type</label>
+            <select id="c_rew_type" class="w-full border border-slate-200 rounded-lg p-2">
+              <option value="cashback">Direct Cashback</option>
+              <option value="points">Reward Points</option>
+              <option value="miles">Air Miles</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="p-3 bg-slate-50 rounded-xl space-y-2 border border-slate-200">
+          <span class="block font-bold text-slate-800">Special Category Rates (%)</span>
+          <div class="grid grid-cols-2 gap-2 text-[11px]">
+            <div>
+              <label>Dining / Food Delivery %</label>
+              <input type="number" step="0.1" id="c_rate_dining" placeholder="e.g. 5.0" class="w-full border border-slate-200 rounded p-1">
+            </div>
+            <div>
+              <label>Groceries %</label>
+              <input type="number" step="0.1" id="c_rate_groceries" placeholder="e.g. 5.0" class="w-full border border-slate-200 rounded p-1">
+            </div>
+            <div>
+              <label>Online Shopping %</label>
+              <input type="number" step="0.1" id="c_rate_online" placeholder="e.g. 5.0" class="w-full border border-slate-200 rounded p-1">
+            </div>
+            <div>
+              <label>Utilities & Bills %</label>
+              <input type="number" step="0.1" id="c_rate_utilities" placeholder="e.g. 5.0" class="w-full border border-slate-200 rounded p-1">
+            </div>
+          </div>
+        </div>
+
+        <div class="p-3 bg-slate-50 rounded-xl space-y-2 border border-slate-200">
+          <span class="block font-bold text-slate-800">Perks & Privileges</span>
+          <div class="grid grid-cols-3 gap-2 text-[11px]">
+            <div>
+              <label>Airport Lounges/Yr</label>
+              <input type="number" id="c_lounges" value="0" class="w-full border border-slate-200 rounded p-1">
+            </div>
+            <div>
+              <label>Movie Max Disc/Mo ₹</label>
+              <input type="number" id="c_movie_disc" value="0" class="w-full border border-slate-200 rounded p-1">
+            </div>
+            <div>
+              <label>Golf Rounds/Yr</label>
+              <input type="number" id="c_golf" value="0" class="w-full border border-slate-200 rounded p-1">
+            </div>
+          </div>
+          <div class="flex items-center gap-4 pt-1">
+            <label class="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" id="c_fuel_waiver" checked class="rounded text-indigo-600">
+              <span>1% Fuel Surcharge Waiver</span>
+            </label>
+            <label class="flex items-center gap-1.5 cursor-pointer">
+              <input type="checkbox" id="c_rupay_upi" class="rounded text-indigo-600">
+              <span>RuPay UPI Enabled</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeCustomCardModal()" class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50">Cancel</button>
+          <button type="submit" class="px-4 py-1.5 rounded-lg bg-indigo-600 text-white font-bold hover:bg-indigo-700">Add & Select Card</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Google Sheet Sync & Allowlist Settings -->
+  <div id="sheetConfigModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 text-xs space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div class="flex items-center gap-2">
+          <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          <h3 class="text-sm font-bold text-slate-900">Google Sheet Backend & Gmail Allowlist</h3>
+        </div>
+        <button onclick="closeSheetModal()" class="text-slate-400 hover:text-slate-600 text-lg leading-none">&times;</button>
+      </div>
+
+      <div class="p-3 bg-emerald-50/70 border border-emerald-200 rounded-xl space-y-1.5">
+        <span class="block font-bold text-emerald-900">Private & Secure Storage</span>
+        <p class="text-emerald-800 text-[11px] leading-relaxed">
+          Your credit cards, spend breakdown, and perk weights are stored directly in your own private Google Sheet. Only emails you add to your <strong>allowed_users</strong> tab can read or save data!
+        </p>
+      </div>
+
+      <div class="space-y-1.5">
+        <label class="block font-semibold text-slate-700">Google Apps Script Web App URL</label>
+        <input type="url" id="sheetWebAppUrlInput" placeholder="https://script.google.com/macros/s/AKfycb.../exec" class="w-full border border-slate-200 rounded-lg p-2 font-mono text-[11px] focus:ring-1 focus:ring-emerald-500">
+        <p class="text-[10px] text-slate-400">Deployed from your Google Sheet (Extensions &rarr; Apps Script &rarr; Deploy as Web App).</p>
+      </div>
+
+      <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+        <span class="block font-bold text-slate-800">Quick 3-Minute Setup:</span>
+        <ol class="list-decimal list-inside text-slate-600 space-y-1 text-[11px]">
+          <li>Create a Google Sheet and click <strong>Extensions &rarr; Apps Script</strong>.</li>
+          <li>Paste the code from <code class="bg-white px-1 py-0.5 rounded border border-slate-200 font-mono">google_sheets_backend/Code.gs</code>.</li>
+          <li>Run <code class="font-bold text-slate-800">setupSpreadsheet</code> once to create the tabs.</li>
+          <li>Add your Gmail to the <code class="font-bold text-slate-800">allowed_users</code> tab.</li>
+          <li>Click <strong>Deploy &rarr; New Deployment &rarr; Web app</strong> (Access: <em>Anyone</em>) and paste the URL above.</li>
+        </ol>
+      </div>
+
+      <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+        <button type="button" onclick="testSheetConnection()" class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 font-bold">
+          Test Connection
+        </button>
+        <div class="flex gap-2">
+          <button type="button" onclick="closeSheetModal()" class="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50">Cancel</button>
+          <button type="button" onclick="saveSheetUrl()" class="px-4 py-1.5 rounded-lg bg-emerald-600 text-white font-bold hover:bg-emerald-700">Save URL</button>
+        </div>
+      </div>
+      <div id="sheetConnectionStatus" class="hidden text-[11px] p-2 rounded-lg font-semibold"></div>
+    </div>
+  </div>
+
+  <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-400 mt-auto">
+    CardSense India Domestic Credit Card Optimization & Gap Analysis Engine &bull; Serverless with Google Sheets Backend
+  </footer>
+
+  <script src="./static/config.js"></script>
+  <script src="./static/engine.js"></script>
+  <script src="./static/app.js"></script>
+</body>
+</html>

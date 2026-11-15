@@ -1,0 +1,60 @@
+{
+  "categories": [
+    {
+      "id": "dining_food_delivery",
+      "name": "Dining & Food Delivery",
+      "description": "Restaurants, Swiggy, Zomato, cafes",
+      "default_monthly_spend": 5000,
+      "benchmark_rate": 0.05
+    },
+    {
+      "id": "groceries",
+      "name": "Groceries & Supermarkets",
+      "description": "Blinkit, Zepto, BigBasket, DMart, local supermarkets",
+      "default_monthly_spend": 8000,
+      "benchmark_rate": 0.05
+    },
+    {
+      "id": "online_shopping",
+      "name": "Online Shopping & E-Commerce",
+      "description": "Amazon, Flipkart, Myntra, electronics, apparel",
+      "default_monthly_spend": 10000,
+      "benchmark_rate": 0.05
+    },
+    {
+      "id": "utilities_bills",
+      "name": "Utilities & Bill Payments",
+      "description": "Electricity, water, gas, mobile & broadband recharges",
+      "default_monthly_spend": 4000,
+      "benchmark_rate": 0.05
+    },
+    {
+      "id": "travel_flights_hotels",
+      "name": "Travel (Flights & Hotels)",
+      "description": "Airlines, hotel bookings, MakeMyTrip, direct portals",
+      "default_monthly_spend": 7000,
+      "benchmark_rate": 0.05
+    },
+    {
+      "id": "fuel",
+      "name": "Fuel",
+      "description": "Petrol pumps, CNG, EV charging",
+      "default_monthly_spend": 4000,
+      "benchmark_rate": 0.01
+    },
+    {
+      "id": "movies_entertainment",
+      "name": "Movies & Entertainment",
+      "description": "BookMyShow, PVR/Inox, OTT subscriptions",
+      "default_monthly_spend": 1500,
+      "benchmark_rate": 0.05
+    },
+    {
+      "id": "general_offline",
+      "name": "General Domestic / Offline Spend",
+      "description": "Retail stores, medical, education, misc domestic spend",
+      "default_monthly_spend": 10000,
+      "benchmark_rate": 0.015
+    }
+  ]
+}

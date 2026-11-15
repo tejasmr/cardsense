@@ -1,0 +1,46 @@
+{
+  "perks": {
+    "domestic_airport_lounge": {
+      "name": "Domestic Airport Lounge Access",
+      "unit_name": "visit",
+      "default_unit_value": 1000,
+      "description": "Complimentary food, beverage, and comfortable seating at airport lounges across India."
+    },
+    "railway_lounge": {
+      "name": "Railway Lounge Access",
+      "unit_name": "visit",
+      "default_unit_value": 300,
+      "description": "Executive railway lounge entry at key IRCTC stations."
+    },
+    "movie_bogo_ticket": {
+      "name": "Movie Buy-One-Get-One Discount",
+      "unit_name": "free ticket / month",
+      "default_unit_value": 250,
+      "description": "Complimentary or BOGO movie ticket discount on BookMyShow, INOX, or PVR."
+    },
+    "golf_round": {
+      "name": "Complimentary Golf Round / Lesson",
+      "unit_name": "round",
+      "default_unit_value": 1500,
+      "description": "Green fee waiver and complimentary golf round or coaching lesson."
+    },
+    "fuel_surcharge_waiver": {
+      "name": "Fuel Surcharge Waiver",
+      "unit_name": "benefit",
+      "default_unit_value": 1,
+      "description": "1% surcharge waiver on fuel transactions between ₹400 and ₹4,000 (valued dynamically based on spend)."
+    },
+    "dining_membership": {
+      "name": "Dining / Delivery Membership",
+      "unit_name": "annual membership",
+      "default_unit_value": 1000,
+      "description": "Complimentary memberships like Swiggy One, Zomato Gold, or EazyDiner Prime."
+    },
+    "milestone_travel_voucher": {
+      "name": "Milestone Travel / Hotel Voucher",
+      "unit_name": "voucher value multiplier",
+      "default_unit_value": 0.85,
+      "description": "Valuation factor for branded travel vouchers (e.g., IndiGo, Cleartrip, Taj, Marriott) relative to cash."
+    }
+  }
+}

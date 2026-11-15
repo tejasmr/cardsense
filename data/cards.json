@@ -1,0 +1,832 @@
+{
+  "cards": [
+    {
+      "id": "hdfc_infinia_metal",
+      "name": "HDFC Infinia Metal Edition",
+      "bank": "HDFC Bank",
+      "network": "Visa",
+      "tier": "Super Premium",
+      "annual_fee": 12500,
+      "gst_rate": 0.18,
+      "fee_waiver_spend_annual": 1000000,
+      "joining_fee": 12500,
+      "is_ltf": false,
+      "reward_type": "points",
+      "point_value_inr": 1.0,
+      "base_reward_rate": 0.0333,
+      "category_rates": {
+        "travel_flights_hotels": 0.1666,
+        "dining_food_delivery": 0.0333,
+        "groceries": 0.0333,
+        "online_shopping": 0.0333,
+        "utilities_bills": 0.0333,
+        "movies_entertainment": 0.0333,
+        "general_offline": 0.0333
+      },
+      "category_caps_monthly": {
+        "travel_flights_hotels": 15000
+      },
+      "category_exclusions": ["fuel"],
+      "overall_monthly_reward_cap": null,
+      "milestones": [],
+      "perks": {
+        "domestic_lounges_per_year": 999,
+        "railway_lounges_per_year": 0,
+        "movie_bogo_monthly_max_discount": 0,
+        "movie_bogo_tickets_per_month": 0,
+        "golf_rounds_per_year": 999,
+        "fuel_surcharge_waiver": true,
+        "fuel_surcharge_monthly_cap": 1000,
+        "dining_membership_name": "ITC Club Culinaire / Good Food Trail",
+        "dining_membership_value": 2500
+      },
+      "rupay_upi_enabled": false,
+      "key_highlights": [
+        "3.33% base return on all spends",
+        "Up to 16.66% on flights & 33.3% on hotels via SmartBuy (1:1 redemption)",
+        "Unlimited domestic & international airport lounge access",
+        "Unlimited complimentary golf rounds"
+      ],
+      "source_url": "https://www.hdfcbank.com/personal/pay/cards/credit-cards/infinia-credit-card"
+    },
+    {
+      "id": "sbi_cashback",
+      "name": "SBI Cashback Card",
+      "bank": "State Bank of India",
+      "network": "Visa",
+      "tier": "Mid",
+      "annual_fee": 999,
+      "gst_rate": 0.18,
+      "fee_waiver_spend_annual": 200000,
+      "joining_fee": 999,
+      "is_ltf": false,
+      "reward_type": "cashback",
+      "point_value_inr": 1.0,
+      "base_reward_rate": 0.01,
+      "category_rates": {
+        "online_shopping": 0.05,
+        "dining_food_delivery": 0.05,
+        "travel_flights_hotels": 0.05,
+        "groceries": 0.05,
+        "movies_entertainment": 0.05,
+        "utilities_bills": 0.01,
+        "general_offline": 0.01
+      },
+      "category_caps_monthly": {
+        "online_shopping": 5000,
+        "dining_food_delivery": 5000,
+        "travel_flights_hotels": 5000,
+        "groceries": 5000,
+        "movies_entertainment": 5000
+      },
+      "category_exclusions": ["fuel", "utilities_bills"],
+      "overall_monthly_reward_cap": 5000,
+      "milestones": [],
+      "perks": {
+        "domestic_lounges_per_year": 0,
+        "railway_lounges_per_year": 0,
+        "movie_bogo_monthly_max_discount": 0,
+        "movie_bogo_tickets_per_month": 0,
+        "golf_rounds_per_year": 0,
+        "fuel_surcharge_waiver": true,
+        "fuel_surcharge_monthly_cap": 100,
+        "dining_membership_name": null,
+        "dining_membership_value": 0
+      },
+      "rupay_upi_enabled": false,
+      "key_highlights": [
+        "5% flat cashback on all online spends (capped at ₹5,000/month)",
+        "Direct cashback credited to statement automatically",
+        "1% cashback on offline spends",
+        "Annual fee waived on ₹2,00,000 annual spend"
+      ],
+      "source_url": "https://www.sbicard.com/en/personal/credit-cards/rewards/cashback-sbi-card.page"
+    },
+    {
+      "id": "icici_amazon_pay",
+      "name": "Amazon Pay ICICI Card",
+      "bank": "ICICI Bank",
+      "network": "Visa",
+      "tier": "Entry",
+      "annual_fee": 0,
+      "gst_rate": 0.18,
+      "fee_waiver_spend_annual": 0,
+      "joining_fee": 0,
+      "is_ltf": true,
+      "reward_type": "cashback",
+      "point_value_inr": 1.0,
+      "base_reward_rate": 0.01,
+      "category_rates": {
+        "online_shopping": 0.05,
+        "utilities_bills": 0.02,
+        "dining_food_delivery": 0.01,
+        "groceries": 0.02,
+        "travel_flights_hotels": 0.02,
+        "movies_entertainment": 0.01,
+        "general_offline": 0.01
+      },
+      "category_caps_monthly": {},
+      "category_exclusions": ["fuel"],
+      "overall_monthly_reward_cap": null,
+      "milestones": [],
+      "perks": {
+        "domestic_lounges_per_year": 0,
+        "railway_lounges_per_year": 0,
+        "movie_bogo_monthly_max_discount": 0,
+        "movie_bogo_tickets_per_month": 0,
+        "golf_rounds_per_year": 0,
+        "fuel_surcharge_waiver": true,
+        "fuel_surcharge_monthly_cap": 250,
+        "dining_membership_name": null,
+        "dining_membership_value": 0
+      },
+      "rupay_upi_enabled": false,
+      "key_highlights": [
+        "Lifetime Free with zero joining or annual fees",
+        "5% unlimited cashback on Amazon.in (for Prime members)",
+        "2% unlimited cashback on Amazon Pay partner bill payments and recharges",
+        "1% unlimited cashback on all other domestic spends"
+      ],
+      "source_url": "https://www.icicibank.com/personal-banking/cards/credit-cards/amazon-pay-credit-card"
+    },
+    {
+      "id": "axis_airtel",
+      "name": "Airtel Axis Bank Credit Card",
+      "bank": "Axis Bank",
+      "network": "Mastercard",
+      "tier": "Entry",
+      "annual_fee": 500,
+      "gst_rate": 0.18,
+      "fee_waiver_spend_annual": 200000,
+      "joining_fee": 500,
+      "is_ltf": false,
+      "reward_type": "cashback",
+      "point_value_inr": 1.0,
+      "base_reward_rate": 0.01,
+      "category_rates": {
+        "utilities_bills": 0.10,
+        "dining_food_delivery": 0.10,
+        "groceries": 0.10,
+        "online_shopping": 0.01,
+        "travel_flights_hotels": 0.01,
+        "movies_entertainment": 0.01,
+        "general_offline": 0.01
+      },
+      "category_caps_monthly": {
+        "utilities_bills": 250,
+        "dining_food_delivery": 500,
+        "groceries": 500
+      },
+      "category_exclusions": ["fuel"],
+      "overall_monthly_reward_cap": null,
+      "milestones": [],
+      "perks": {
+        "domestic_lounges_per_year": 4,
+        "railway_lounges_per_year": 0,
+        "movie_bogo_monthly_max_discount": 0,
+        "movie_bogo_tickets_per_month": 0,
+        "golf_rounds_per_year": 0,
+        "fuel_surcharge_waiver": true,
+        "fuel_surcharge_monthly_cap": 400,
+        "dining_membership_name": null,
+        "dining_membership_value": 0
+      },
+      "rupay_upi_enabled": false,
+      "key_highlights": [
+        "25% cashback on Airtel Mobile, Broadband, DTH via Airtel Thanks (capped at ₹250/mo)",
+        "10% cashback on Utility bill payments (capped at ₹250/mo)",
+        "10% cashback on Swiggy, Zomato, BigBasket (capped at ₹500/mo combined)",
+        "4 complimentary domestic airport lounge visits per year"
+      ],
+      "source_url": "https://www.axisbank.com/retail/cards/credit-card/airtel-axis-bank-credit-card"
+    },
+    {
+      "id": "hdfc_swiggy",
+      "name": "Swiggy HDFC Bank Credit Card",
+      "bank": "HDFC Bank",
+      "network": "Mastercard",
+      "tier": "Entry",
+      "annual_fee": 500,
+      "gst_rate": 0.18,
+      "fee_waiver_spend_annual": 200000,
+      "joining_fee": 500,
+      "is_ltf": false,
+      "reward_type": "cashback",
+      "point_value_inr": 1.0,
+      "base_reward_rate": 0.01,
+      "category_rates": {
+        "dining_food_delivery": 0.10,
+        "groceries": 0.10,
+        "online_shopping": 0.05,
+        "utilities_bills": 0.01,
+        "travel_flights_hotels": 0.01,
+        "movies_entertainment": 0.01,
+        "general_offline": 0.01
+      },
+      "category_caps_monthly": {
+        "dining_food_delivery": 1500,
+        "groceries": 1500,
+        "online_shopping": 1500
+      },
+      "category_exclusions": ["fuel"],
+      "overall_monthly_reward_cap": null,
+      "milestones": [],
+      "perks": {
+        "domestic_lounges_per_year": 0,
+        "railway_lounges_per_year": 0,
+        "movie_bogo_monthly_max_discount": 0,
+        "movie_bogo_tickets_per_month": 0,
+        "golf_rounds_per_year": 0,
+        "fuel_surcharge_waiver": false,
+        "fuel_surcharge_monthly_cap": 0,
+        "dining_membership_name": "Swiggy One 3-Month Membership",
+        "dining_membership_value": 899
+      },
+      "rupay_upi_enabled": false,
+      "key_highlights": [
+        "10% cashback on Swiggy (Food, Instamart, Dineout, Genie) capped at ₹1,500/mo",
+        "5% cashback on top online merchants (Amazon, Flipkart, Myntra, Nykaa, etc.) capped at ₹1,500/mo",
+        "1% cashback on other spends",
+        "Complimentary 3-month Swiggy One membership on card activation"
+      ],
+      "source_url": "https://www.hdfcbank.com/personal/pay/cards/credit-cards/swiggy-hdfc-bank-credit-card"
+    },
+    {
+      "id": "hdfc_tata_neu_infinity",
+      "name": "Tata Neu Infinity HDFC Bank Card (RuPay)",
+      "bank": "HDFC Bank",
+      "network": "RuPay",
+      "tier": "Mid",
+      "annual_fee": 1499,
+      "gst_rate": 0.18,
+      "fee_waiver_spend_annual": 300000,
+      "joining_fee": 1499,
+      "is_ltf": false,
+      "reward_type": "points",
+      "point_value_inr": 1.0,
+      "base_reward_rate": 0.015,
+      "category_rates": {
+        "groceries": 0.10,
+        "online_shopping": 0.05,
+        "travel_flights_hotels": 0.05,
+        "dining_food_delivery": 0.015,
+        "utilities_bills": 0.05,
+        "movies_entertainment": 0.015,
+        "general_offline": 0.015
+      },
+      "category_caps_monthly": {},
+      "category_exclusions": ["fuel"],
+      "overall_monthly_reward_cap": null,
+      "milestones": [],
+      "perks": {
+        "domestic_lounges_per_year": 8,
+        "railway_lounges_per_year": 0,
+        "movie_bogo_monthly_max_discount": 0,
+        "movie_bogo_tickets_per_month": 0,
+        "golf_rounds_per_year": 0,
+        "fuel_surcharge_waiver": true,
+        "fuel_surcharge_monthly_cap": 500,
+        "dining_membership_name": null,
+        "dining_membership_value": 0
+      },
+      "rupay_upi_enabled": true,
+      "key_highlights": [
+        "1.5% NeuCoins on UPI merchant transactions via RuPay",
+        "Up to 10% NeuCoins on Tata Neu ecosystem (BigBasket, 1mg, Croma, Air India Express, Westside)",
+        "8 complimentary domestic lounge visits per year (2/quarter)",
+        "1 NeuCoin = ₹1 at Tata brands"
+      ],
+      "source_url": "https://www.hdfcbank.com/personal/pay/cards/credit-cards/tata-neu-infinity-hdfc-bank-credit-card"
+    },
+    {
+      "id": "hdfc_regalia_gold",
+      "name": "HDFC Regalia Gold",
+      "bank": "HDFC Bank",
+      "network": "Visa",
+      "tier": "Premium",
+      "annual_fee": 2500,
+      "gst_rate": 0.18,
+      "fee_waiver_spend_annual": 400000,
+      "joining_fee": 2500,
+      "is_ltf": false,
+      "reward_type": "points",
+      "point_value_inr": 0.50,
+      "base_reward_rate": 0.0133,
+      "category_rates": {
+        "travel_flights_hotels": 0.0666,
+        "online_shopping": 0.0333,
+        "dining_food_delivery": 0.0133,
+        "groceries": 0.0133,
+        "utilities_bills": 0.0133,
+        "movies_entertainment": 0.0133,
+        "general_offline": 0.0133
+      },
+      "category_caps_monthly": {
+        "travel_flights_hotels": 5000
+      },
+      "category_exclusions": ["fuel"],
+      "overall_monthly_reward_cap": null,
+      "milestones": [
+        {
+          "spend_threshold_annual": 150000,
+          "reward_type": "voucher",
+          "reward_value": 1500,
+          "voucher_type": "general",
+          "description": "₹1,500 quarterly voucher (Marks & Spencer / Myntra / Reliance Digital)"
+        },
+        {
+          "spend_threshold_annual": 500000,
+          "reward_type": "voucher",
+          "reward_value": 5000,
+          "voucher_type": "flight",
+          "description": "₹5,000 flight voucher on ₹5,00,000 annual spend"
+        },
+        {
+          "spend_threshold_annual": 750000,
+          "reward_type": "voucher",
+          "reward_value": 5000,
+          "voucher_type": "flight",
+          "description": "Additional ₹5,000 flight voucher on ₹7,50,000 annual spend"
+        }
+      ],
+      "perks": {
+        "domestic_lounges_per_year": 12,
+        "railway_lounges_per_year": 0,
+        "movie_bogo_monthly_max_discount": 0,
+        "movie_bogo_tickets_per_month": 0,
+        "golf_rounds_per_year": 0,
+        "fuel_surcharge_waiver": true,
+        "fuel_surcharge_monthly_cap": 500,
+        "dining_membership_name": "Club Vistara Silver / MMT Black Elite",
+        "dining_membership_value": 1500
+      },
+      "rupay_upi_enabled": false,
+      "key_highlights": [
+        "4 reward points per ₹150 (up to 6.66% return on flights via SmartBuy)",
+        "12 complimentary domestic lounge visits per year",
+        "Vouchers worth up to ₹11,500 on milestone spends",
+        "Club Vistara Silver and MMT Black Elite membership"
+      ],
+      "source_url": "https://www.hdfcbank.com/personal/pay/cards/credit-cards/regalia-gold-credit-card"
+    },
+    {
+      "id": "hdfc_millennia",
+      "name": "HDFC Millennia Credit Card",
+      "bank": "HDFC Bank",
+      "network": "Visa",
+      "tier": "Entry",
+      "annual_fee": 1000,
+      "gst_rate": 0.18,
+      "fee_waiver_spend_annual": 100000,
+      "joining_fee": 1000,
+      "is_ltf": false,
+      "reward_type": "cashback",
+      "point_value_inr": 1.0,
+      "base_reward_rate": 0.01,
+      "category_rates": {
+        "online_shopping": 0.05,
+        "dining_food_delivery": 0.05,
+        "travel_flights_hotels": 0.05,
+        "groceries": 0.05,
+        "movies_entertainment": 0.05,
+        "utilities_bills": 0.01,
+        "general_offline": 0.01
+      },
+      "category_caps_monthly": {
+        "online_shopping": 1000,
+        "dining_food_delivery": 1000,
+        "travel_flights_hotels": 1000,
+        "groceries": 1000,
+        "movies_entertainment": 1000
+      },
+      "category_exclusions": ["fuel", "utilities_bills"],
+      "overall_monthly_reward_cap": 2000,
+      "milestones": [
+        {
+          "spend_threshold_annual": 400000,
+          "reward_type": "voucher",
+          "reward_value": 4000,
+          "voucher_type": "general",
+          "description": "₹1,000 gift voucher per calendar quarter on spending ₹1,00,000 in the quarter"
+        }
+      ],
+      "perks": {
+        "domestic_lounges_per_year": 4,
+        "railway_lounges_per_year": 0,
+        "movie_bogo_monthly_max_discount": 0,
+        "movie_bogo_tickets_per_month": 0,
+        "golf_rounds_per_year": 0,
+        "fuel_surcharge_waiver": true,
+        "fuel_surcharge_monthly_cap": 250,
+        "dining_membership_name": null,
+        "dining_membership_value": 0
+      },
+      "rupay_upi_enabled": false,
+      "key_highlights": [
+        "5% cashback on partner merchants (Amazon, Flipkart, Swiggy, Zomato, Uber, Myntra, etc.)",
+        "1% cashback on other spends",
+        "4 complimentary domestic airport lounge visits per year",
+        "Fee waiver on ₹1,00,000 annual spend"
+      ],
+      "source_url": "https://www.hdfcbank.com/personal/pay/cards/credit-cards/millennia-cards"
+    },
+    {
+      "id": "icici_sapphiro",
+      "name": "ICICI Sapphiro (Dual Card)",
+      "bank": "ICICI Bank",
+      "network": "Mastercard",
+      "tier": "Premium",
+      "annual_fee": 3500,
+      "gst_rate": 0.18,
+      "fee_waiver_spend_annual": 600000,
+      "joining_fee": 6500,
+      "is_ltf": false,
+      "reward_type": "points",
+      "point_value_inr": 0.25,
+      "base_reward_rate": 0.01,
+      "category_rates": {
+        "travel_flights_hotels": 0.02,
+        "dining_food_delivery": 0.01,
+        "groceries": 0.01,
+        "online_shopping": 0.01,
+        "utilities_bills": 0.01,
+        "movies_entertainment": 0.01,
+        "general_offline": 0.01
+      },
+      "category_caps_monthly": {},
+      "category_exclusions": ["fuel"],
+      "overall_monthly_reward_cap": null,
+      "milestones": [],
+      "perks": {
+        "domestic_lounges_per_year": 16,
+        "railway_lounges_per_year": 0,
+        "movie_bogo_monthly_max_discount": 500,
+        "movie_bogo_tickets_per_month": 2,
+        "golf_rounds_per_year": 16,
+        "fuel_surcharge_waiver": true,
+        "fuel_surcharge_monthly_cap": 400,
+        "dining_membership_name": "Culinary Treats Dining Program",
+        "dining_membership_value": 1000
+      },
+      "rupay_upi_enabled": false,
+      "key_highlights": [
+        "Buy 1 Get 1 free movie ticket on BookMyShow up to ₹500 off (twice per month)",
+        "4 complimentary domestic lounge visits per quarter (16/year)",
+        "4 complimentary golf rounds per quarter (16/year)",
+        "DreamFolks DragonPass international lounge access"
+      ],
+      "source_url": "https://www.icicibank.com/personal-banking/cards/credit-cards/sapphiro-credit-card"
+    },
+    {
+      "id": "axis_atlas",
+      "name": "Axis Bank Atlas Credit Card",
+      "bank": "Axis Bank",
+      "network": "Visa",
+      "tier": "Premium",
+      "annual_fee": 5000,
+      "gst_rate": 0.18,
+      "fee_waiver_spend_annual": null,
+      "joining_fee": 5000,
+      "is_ltf": false,
+      "reward_type": "miles",
+      "point_value_inr": 1.0,
+      "base_reward_rate": 0.04,
+      "category_rates": {
+        "travel_flights_hotels": 0.10,
+        "dining_food_delivery": 0.04,
+        "groceries": 0.04,
+        "online_shopping": 0.04,
+        "utilities_bills": 0.02,
+        "movies_entertainment": 0.04,
+        "general_offline": 0.04
+      },
+      "category_caps_monthly": {
+        "travel_flights_hotels": 10000
+      },
+      "category_exclusions": ["fuel"],
+      "overall_monthly_reward_cap": null,
+      "milestones": [
+        {
+          "spend_threshold_annual": 300000,
+          "reward_type": "points",
+          "reward_value": 2500,
+          "voucher_type": null,
+          "description": "2,500 bonus EDGE Miles on ₹3,00,000 spend (Silver Tier)"
+        },
+        {
+          "spend_threshold_annual": 750000,
+          "reward_type": "points",
+          "reward_value": 2500,
+          "voucher_type": null,
+          "description": "Additional 2,500 bonus EDGE Miles on ₹7,50,000 spend (Gold Tier)"
+        },
+        {
+          "spend_threshold_annual": 1500000,
+          "reward_type": "points",
+          "reward_value": 5000,
+          "voucher_type": null,
+          "description": "5,000 bonus EDGE Miles on ₹15,00,000 spend (Platinum Tier)"
+        }
+      ],
+      "perks": {
+        "domestic_lounges_per_year": 12,
+        "railway_lounges_per_year": 0,
+        "movie_bogo_monthly_max_discount": 0,
+        "movie_bogo_tickets_per_month": 0,
+        "golf_rounds_per_year": 0,
+        "fuel_surcharge_waiver": true,
+        "fuel_surcharge_monthly_cap": 400,
+        "dining_membership_name": "Axis Dining Delights",
+        "dining_membership_value": 1000
+      },
+      "rupay_upi_enabled": false,
+      "key_highlights": [
+        "2 EDGE Miles per ₹100 (4% value on 1:2 partner conversion like Accor/Airlines)",
+        "5 EDGE Miles per ₹100 on direct airline and hotel bookings (10% value)",
+        "Up to 10,000 bonus EDGE Miles on tiered annual milestones",
+        "Up to 12-18 domestic and international lounge visits depending on tier"
+      ],
+      "source_url": "https://www.axisbank.com/retail/cards/credit-card/axis-bank-atlas-credit-card"
+    },
+    {
+      "id": "amex_plat_travel",
+      "name": "American Express Platinum Travel",
+      "bank": "American Express",
+      "network": "Amex",
+      "tier": "Premium",
+      "annual_fee": 5000,
+      "gst_rate": 0.18,
+      "fee_waiver_spend_annual": null,
+      "joining_fee": 3500,
+      "is_ltf": false,
+      "reward_type": "points",
+      "point_value_inr": 0.50,
+      "base_reward_rate": 0.01,
+      "category_rates": {
+        "travel_flights_hotels": 0.01,
+        "dining_food_delivery": 0.01,
+        "groceries": 0.01,
+        "online_shopping": 0.01,
+        "utilities_bills": 0.01,
+        "movies_entertainment": 0.01,
+        "general_offline": 0.01
+      },
+      "category_caps_monthly": {},
+      "category_exclusions": ["fuel"],
+      "overall_monthly_reward_cap": null,
+      "milestones": [
+        {
+          "spend_threshold_annual": 190000,
+          "reward_type": "voucher",
+          "reward_value": 11500,
+          "voucher_type": "flight",
+          "description": "15,000 bonus MR Points + ₹4,000 IndiGo voucher on ₹1.9L spend (~₹11,500 value)"
+        },
+        {
+          "spend_threshold_annual": 400000,
+          "reward_type": "voucher",
+          "reward_value": 28500,
+          "voucher_type": "hotel",
+          "description": "25,000 bonus MR Points + ₹6,000 IndiGo voucher + ₹10,000 Taj voucher on ₹4L spend (~₹28,500 value)"
+        }
+      ],
+      "perks": {
+        "domestic_lounges_per_year": 8,
+        "railway_lounges_per_year": 0,
+        "movie_bogo_monthly_max_discount": 0,
+        "movie_bogo_tickets_per_month": 0,
+        "golf_rounds_per_year": 0,
+        "fuel_surcharge_waiver": false,
+        "fuel_surcharge_monthly_cap": 0,
+        "dining_membership_name": "Taj Experiences Privilege",
+        "dining_membership_value": 2000
+      },
+      "rupay_upi_enabled": false,
+      "key_highlights": [
+        "Unbeatable ~8-10% return rate on exactly ₹4,00,000 annual spend",
+        "₹10,000 Taj Stay Voucher on reaching ₹4,00,000 annual milestone",
+        "₹10,000 total IndiGo flight vouchers + 40,000 bonus MR points",
+        "8 complimentary domestic lounge visits (2/quarter)"
+      ],
+      "source_url": "https://www.americanexpress.com/in/credit-cards/platinum-travel-credit-card/"
+    },
+    {
+      "id": "axis_ace",
+      "name": "Axis Bank ACE Credit Card",
+      "bank": "Axis Bank",
+      "network": "Visa",
+      "tier": "Entry",
+      "annual_fee": 499,
+      "gst_rate": 0.18,
+      "fee_waiver_spend_annual": 200000,
+      "joining_fee": 499,
+      "is_ltf": false,
+      "reward_type": "cashback",
+      "point_value_inr": 1.0,
+      "base_reward_rate": 0.015,
+      "category_rates": {
+        "utilities_bills": 0.05,
+        "dining_food_delivery": 0.04,
+        "online_shopping": 0.015,
+        "groceries": 0.015,
+        "travel_flights_hotels": 0.015,
+        "movies_entertainment": 0.015,
+        "general_offline": 0.015
+      },
+      "category_caps_monthly": {
+        "utilities_bills": 500,
+        "dining_food_delivery": 500
+      },
+      "category_exclusions": ["fuel"],
+      "overall_monthly_reward_cap": null,
+      "milestones": [],
+      "perks": {
+        "domestic_lounges_per_year": 4,
+        "railway_lounges_per_year": 0,
+        "movie_bogo_monthly_max_discount": 0,
+        "movie_bogo_tickets_per_month": 0,
+        "golf_rounds_per_year": 0,
+        "fuel_surcharge_waiver": true,
+        "fuel_surcharge_monthly_cap": 500,
+        "dining_membership_name": null,
+        "dining_membership_value": 0
+      },
+      "rupay_upi_enabled": false,
+      "key_highlights": [
+        "5% cashback on utility bills & DTH via Google Pay (capped at ₹500/mo)",
+        "4% cashback on Swiggy, Zomato, and Ola (capped at ₹500/mo)",
+        "1.5% unlimited cashback on all other domestic spends",
+        "4 complimentary domestic airport lounge visits per year"
+      ],
+      "source_url": "https://www.axisbank.com/retail/cards/credit-card/axis-bank-ace-credit-card"
+    },
+    {
+      "id": "hsbc_live_plus",
+      "name": "HSBC Live+ Credit Card",
+      "bank": "HSBC India",
+      "network": "Visa",
+      "tier": "Mid",
+      "annual_fee": 999,
+      "gst_rate": 0.18,
+      "fee_waiver_spend_annual": 200000,
+      "joining_fee": 999,
+      "is_ltf": false,
+      "reward_type": "cashback",
+      "point_value_inr": 1.0,
+      "base_reward_rate": 0.015,
+      "category_rates": {
+        "dining_food_delivery": 0.10,
+        "groceries": 0.10,
+        "online_shopping": 0.015,
+        "utilities_bills": 0.015,
+        "travel_flights_hotels": 0.015,
+        "movies_entertainment": 0.015,
+        "general_offline": 0.015
+      },
+      "category_caps_monthly": {
+        "dining_food_delivery": 1000,
+        "groceries": 1000
+      },
+      "category_exclusions": ["fuel"],
+      "overall_monthly_reward_cap": null,
+      "milestones": [],
+      "perks": {
+        "domestic_lounges_per_year": 4,
+        "railway_lounges_per_year": 0,
+        "movie_bogo_monthly_max_discount": 0,
+        "movie_bogo_tickets_per_month": 0,
+        "golf_rounds_per_year": 0,
+        "fuel_surcharge_waiver": true,
+        "fuel_surcharge_monthly_cap": 250,
+        "dining_membership_name": "EazyDiner Prime 15% discount",
+        "dining_membership_value": 1200
+      },
+      "rupay_upi_enabled": false,
+      "key_highlights": [
+        "10% accelerated cashback on Dining, Food Delivery, and Groceries (up to ₹1,000/mo)",
+        "1.5% unlimited flat cashback on all other domestic spends",
+        "4 complimentary domestic airport lounge visits per year",
+        "Annual fee waived on ₹2,00,000 annual spend"
+      ],
+      "source_url": "https://www.hsbc.co.in/credit-cards/products/live-plus/"
+    },
+    {
+      "id": "amex_mrcc",
+      "name": "American Express Membership Rewards (MRCC)",
+      "bank": "American Express",
+      "network": "Amex",
+      "tier": "Mid",
+      "annual_fee": 4500,
+      "gst_rate": 0.18,
+      "fee_waiver_spend_annual": 150000,
+      "joining_fee": 1000,
+      "is_ltf": false,
+      "reward_type": "points",
+      "point_value_inr": 0.50,
+      "base_reward_rate": 0.01,
+      "category_rates": {
+        "dining_food_delivery": 0.01,
+        "groceries": 0.01,
+        "online_shopping": 0.01,
+        "utilities_bills": 0.01,
+        "travel_flights_hotels": 0.01,
+        "movies_entertainment": 0.01,
+        "general_offline": 0.01
+      },
+      "category_caps_monthly": {},
+      "category_exclusions": ["fuel"],
+      "overall_monthly_reward_cap": null,
+      "milestones": [
+        {
+          "spend_threshold_annual": 72000,
+          "reward_type": "points",
+          "reward_value": 12000,
+          "voucher_type": null,
+          "description": "1,000 bonus MR points per month on 4 transactions of ₹1,500+ (12,000 pts/yr)"
+        },
+        {
+          "spend_threshold_annual": 240000,
+          "reward_type": "points",
+          "reward_value": 12000,
+          "voucher_type": null,
+          "description": "1,000 bonus MR points per month on ₹20,000 monthly spend (12,000 pts/yr)"
+        }
+      ],
+      "perks": {
+        "domestic_lounges_per_year": 0,
+        "railway_lounges_per_year": 0,
+        "movie_bogo_monthly_max_discount": 0,
+        "movie_bogo_tickets_per_month": 0,
+        "golf_rounds_per_year": 0,
+        "fuel_surcharge_waiver": false,
+        "fuel_surcharge_monthly_cap": 0,
+        "dining_membership_name": null,
+        "dining_membership_value": 0
+      },
+      "rupay_upi_enabled": false,
+      "key_highlights": [
+        "Earn up to 24,000 bonus MR points annually on monthly milestone spends",
+        "Redeemable for Marriott Bonvoy points or high-value vouchers (₹12,000+ value)",
+        "100% annual fee waiver on ₹1,50,000 spend (50% waiver on ₹90,000 spend)",
+        "Great for small frequent transactions (4 x ₹1,500/month)"
+      ],
+      "source_url": "https://www.americanexpress.com/in/credit-cards/membership-rewards-card/"
+    },
+    {
+      "id": "idfc_first_wealth",
+      "name": "IDFC FIRST Wealth Credit Card",
+      "bank": "IDFC FIRST Bank",
+      "network": "Visa",
+      "tier": "Premium",
+      "annual_fee": 0,
+      "gst_rate": 0.18,
+      "fee_waiver_spend_annual": 0,
+      "joining_fee": 0,
+      "is_ltf": true,
+      "reward_type": "points",
+      "point_value_inr": 0.25,
+      "base_reward_rate": 0.0075,
+      "category_rates": {
+        "online_shopping": 0.015,
+        "dining_food_delivery": 0.0075,
+        "groceries": 0.0075,
+        "utilities_bills": 0.0075,
+        "travel_flights_hotels": 0.015,
+        "movies_entertainment": 0.015,
+        "general_offline": 0.0075
+      },
+      "category_caps_monthly": {},
+      "category_exclusions": ["fuel"],
+      "overall_monthly_reward_cap": null,
+      "milestones": [
+        {
+          "spend_threshold_annual": 360000,
+          "reward_type": "points",
+          "reward_value": 10000,
+          "voucher_type": null,
+          "description": "10X reward points (2.5% return) on spends exceeding ₹30,000 in a billing cycle"
+        }
+      ],
+      "perks": {
+        "domestic_lounges_per_year": 16,
+        "railway_lounges_per_year": 16,
+        "movie_bogo_monthly_max_discount": 250,
+        "movie_bogo_tickets_per_month": 2,
+        "golf_rounds_per_year": 8,
+        "fuel_surcharge_waiver": true,
+        "fuel_surcharge_monthly_cap": 300,
+        "dining_membership_name": null,
+        "dining_membership_value": 0
+      },
+      "rupay_upi_enabled": false,
+      "key_highlights": [
+        "Lifetime Free super-premium card with zero joining and annual fees",
+        "4 complimentary domestic airport lounge visits per quarter (16/yr) with low spend criteria",
+        "4 complimentary railway lounge visits per quarter",
+        "Buy 1 Get 1 free movie ticket up to ₹250 on Paytm/District twice a month",
+        "2 complimentary golf rounds per month"
+      ],
+      "source_url": "https://www.idfcfirstbank.com/credit-card/wealth"
+    }
+  ]
+}
