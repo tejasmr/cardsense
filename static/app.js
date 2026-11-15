@@ -63,6 +63,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Check auth session
   await checkAuthStatus();
 
+  // Initialize Google Identity button
+  if (typeof window.tryInitGoogleIdentity === "function") {
+    window.tryInitGoogleIdentity();
+  }
+
   await triggerAnalysis();
 });
 
@@ -176,6 +181,19 @@ function closeAuthModal() {
   clearAuthError();
 }
 
+window.tryInitGoogleIdentity = function(attempts = 0) {
+  const INJECTED_CLIENT_ID = (window.CARDSENSE_GOOGLE_CLIENT_ID && !window.CARDSENSE_GOOGLE_CLIENT_ID.startsWith("__"))
+    ? window.CARDSENSE_GOOGLE_CLIENT_ID
+    : "";
+  const clientId = INJECTED_CLIENT_ID || (catalogData ? catalogData.google_client_id : "");
+
+  if (window.google && clientId) {
+    initGoogleIdentity();
+  } else if (attempts < 20) {
+    setTimeout(() => window.tryInitGoogleIdentity(attempts + 1), 300);
+  }
+};
+
 function initGoogleIdentity() {
   const INJECTED_CLIENT_ID = (window.CARDSENSE_GOOGLE_CLIENT_ID && !window.CARDSENSE_GOOGLE_CLIENT_ID.startsWith("__"))
     ? window.CARDSENSE_GOOGLE_CLIENT_ID
@@ -230,6 +248,27 @@ async function handleGoogleCredentialResponse(response) {
     return;
   }
   await verifyAndLoginUser(payload.email, payload.name, payload.picture);
+}
+
+async function handleGateDirectLogin(e) {
+  if (e) e.preventDefault();
+  clearAuthError();
+  const input = document.getElementById("gateEmailInput");
+  const email = (input ? input.value : "").trim();
+  if (!email || !email.includes("@")) {
+    showAuthError("Please enter a valid Gmail address.");
+    return;
+  }
+
+  const submitBtn = document.getElementById("gateSubmitBtn");
+  const origText = submitBtn ? submitBtn.innerText : "Sign In";
+  if (submitBtn) submitBtn.innerText = "Verifying...";
+
+  const name = email.split("@")[0].replace(/[._]/g, " ").replace(/\b\w/g, l => l.toUpperCase());
+  const ok = await verifyAndLoginUser(email, name, "https://lh3.googleusercontent.com/a/default-user");
+  if (!ok && submitBtn) {
+    submitBtn.innerText = origText;
+  }
 }
 
 async function verifyAndLoginUser(email, name, avatar) {
