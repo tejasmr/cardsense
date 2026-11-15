@@ -250,27 +250,6 @@ async function handleGoogleCredentialResponse(response) {
   await verifyAndLoginUser(payload.email, payload.name, payload.picture);
 }
 
-async function handleGateDirectLogin(e) {
-  if (e) e.preventDefault();
-  clearAuthError();
-  const input = document.getElementById("gateEmailInput");
-  const email = (input ? input.value : "").trim();
-  if (!email || !email.includes("@")) {
-    showAuthError("Please enter a valid Gmail address.");
-    return;
-  }
-
-  const submitBtn = document.getElementById("gateSubmitBtn");
-  const origText = submitBtn ? submitBtn.innerText : "Sign In";
-  if (submitBtn) submitBtn.innerText = "Verifying...";
-
-  const name = email.split("@")[0].replace(/[._]/g, " ").replace(/\b\w/g, l => l.toUpperCase());
-  const ok = await verifyAndLoginUser(email, name, "https://lh3.googleusercontent.com/a/default-user");
-  if (!ok && submitBtn) {
-    submitBtn.innerText = origText;
-  }
-}
-
 async function verifyAndLoginUser(email, name, avatar) {
   clearAuthError();
   const cleanEmail = email.toLowerCase().trim();
