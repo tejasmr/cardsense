@@ -462,4 +462,59 @@ class ClientCreditCardEngine {
     recommendations.sort((a, b) => b.projected_net_gain_inr - a.projected_net_gain_inr);
     return recommendations.slice(0, 5);
   }
+
+  runAnalysis(selectedCardIds, spendProfile, weights, customCards = []) {
+    const allCards = [...this.catalogCards, ...customCards];
+    const cardMap = new Map();
+    allCards.forEach(c => cardMap.set(c.id, c));
+
+    const selectedCards = selectedCardIds
+      .map(id => cardMap.get(id))
+      .filter(Boolean);
+
+    const monthlySpend = spendProfile.monthly_spend || {};
+    const totSpend = Object.values(monthlySpend).reduce((a, b) => a + (Number(b) || 0), 0) * 12.0;
+
+    if (selectedCards.length === 0) {
+      return {
+        total_annual_spend: Number(totSpend.toFixed(2)),
+        total_annual_rewards: 0,
+        total_perk_value: 0,
+        total_fees_paid: 0,
+        net_annual_value: 0,
+        net_portfolio_yield_percent: 0,
+        best_spend_routing: {},
+        cards_summary: [],
+        gaps: [],
+        recommendations: []
+      };
+    }
+
+    const { cardsSummary, routingInfo } = this.analyzePortfolio(selectedCards, spendProfile, weights);
+    const gaps = this.analyzeGaps(selectedCards, cardsSummary, spendProfile, routingInfo, weights);
+    const recommendations = this.generateRecommendations(selectedCards, cardsSummary, spendProfile, gaps, weights);
+
+    const totRewards = cardsSummary.reduce((acc, q) => acc + q.total_rewards_earned, 0);
+    const totPerks = cardsSummary.reduce((acc, q) => acc + q.total_perk_value, 0);
+    const totFees = cardsSummary.reduce((acc, q) => acc + q.effective_annual_fee, 0);
+    const netVal = cardsSummary.reduce((acc, q) => acc + q.net_value, 0);
+    const netYield = totSpend > 0 ? (netVal / totSpend * 100.0) : 0.0;
+
+    return {
+      total_annual_spend: Number(totSpend.toFixed(2)),
+      total_annual_rewards: Number(totRewards.toFixed(2)),
+      total_perk_value: Number(totPerks.toFixed(2)),
+      total_fees_paid: Number(totFees.toFixed(2)),
+      net_annual_value: Number(netVal.toFixed(2)),
+      net_portfolio_yield_percent: Number(netYield.toFixed(2)),
+      best_spend_routing: routingInfo,
+      cards_summary: cardsSummary,
+      gaps: gaps,
+      recommendations: recommendations
+    };
+  }
 }
+
+// Expose globally for browser usage
+window.ClientCreditCardEngine = ClientCreditCardEngine;
+

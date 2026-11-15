@@ -67,6 +67,42 @@ document.addEventListener("DOMContentLoaded", async () => {
   await triggerAnalysis();
 });
 
+// --- Environment & Helper Functions ---
+
+function hasLocalBackend() {
+  const host = window.location.hostname;
+  return (host === "localhost" || host === "127.0.0.1") && (window.location.port === "8000" || window.location.port === "3000");
+}
+
+function decodeGoogleJwt(token) {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  } catch (e) {
+    return null;
+  }
+}
+
+function showAuthError(msg) {
+  const errBox = document.getElementById("googleAuthError");
+  if (errBox) {
+    errBox.innerText = msg;
+    errBox.classList.remove("hidden");
+  }
+}
+
+function clearAuthError() {
+  const errBox = document.getElementById("googleAuthError");
+  if (errBox) errBox.classList.add("hidden");
+}
+
 // --- Auth & User Profile Functions ---
 
 function getAuthHeaders() {
@@ -78,30 +114,32 @@ function getAuthHeaders() {
 }
 
 async function checkAuthStatus() {
-  if (!authToken) {
-    renderAuthUI(null);
-    return;
-  }
-
-  try {
-    const res = await fetch("/api/auth/me", {
-      headers: getAuthHeaders()
-    });
-
-    if (res.ok) {
-      currentUser = await res.json();
+  // 1. Check local session
+  const savedUser = localStorage.getItem("cardsense_current_user");
+  if (savedUser) {
+    try {
+      currentUser = JSON.parse(savedUser);
       renderAuthUI(currentUser);
       await loadUserConfig();
-    } else {
-      // Token expired or invalid
-      authToken = null;
-      localStorage.removeItem("cardsense_auth_token");
-      renderAuthUI(null);
-    }
-  } catch (err) {
-    console.error("Auth status check failed:", err);
-    renderAuthUI(null);
+      return;
+    } catch (e) {}
   }
+
+  // 2. If running with local FastAPI backend, check /api/auth/me
+  if (authToken && hasLocalBackend()) {
+    try {
+      const res = await fetch("/api/auth/me", { headers: getAuthHeaders() });
+      if (res.ok) {
+        currentUser = await res.json();
+        localStorage.setItem("cardsense_current_user", JSON.stringify(currentUser));
+        renderAuthUI(currentUser);
+        await loadUserConfig();
+        return;
+      }
+    } catch (err) {}
+  }
+
+  renderAuthUI(null);
 }
 
 function renderAuthUI(user) {
@@ -136,6 +174,7 @@ function renderAuthUI(user) {
 }
 
 function openAuthModal() {
+  clearAuthError();
   const modal = document.getElementById("authModal");
   if (modal) modal.classList.remove("hidden");
   initGoogleIdentity();
@@ -144,13 +183,19 @@ function openAuthModal() {
 function closeAuthModal() {
   const modal = document.getElementById("authModal");
   if (modal) modal.classList.add("hidden");
+  clearAuthError();
 }
 
 function initGoogleIdentity() {
-  if (window.google && catalogData.google_client_id) {
+  const INJECTED_CLIENT_ID = (window.CARDSENSE_GOOGLE_CLIENT_ID && !window.CARDSENSE_GOOGLE_CLIENT_ID.startsWith("__"))
+    ? window.CARDSENSE_GOOGLE_CLIENT_ID
+    : "";
+  const clientId = INJECTED_CLIENT_ID || (catalogData ? catalogData.google_client_id : "");
+
+  if (window.google && clientId) {
     try {
       google.accounts.id.initialize({
-        client_id: catalogData.google_client_id,
+        client_id: clientId,
         callback: handleGoogleCredentialResponse
       });
       const container = document.getElementById("googleSignInButtonContainer");
@@ -172,152 +217,196 @@ function initGoogleIdentity() {
 }
 
 async function handleGoogleCredentialResponse(response) {
-  const errBox = document.getElementById("googleAuthError");
-  if (errBox) errBox.classList.add("hidden");
-
-  try {
-    const res = await fetch("/api/auth/google", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ credential: response.credential })
-    });
-
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.detail || "Google sign-in failed");
-    }
-
-    const data = await res.json();
-    authToken = data.token;
-    localStorage.setItem("cardsense_auth_token", authToken);
-    currentUser = data.user;
-    renderAuthUI(currentUser);
-    closeAuthModal();
-
-    await loadUserConfig();
-    await triggerAnalysis();
-  } catch (err) {
-    if (errBox) {
-      errBox.innerText = err.message;
-      errBox.classList.remove("hidden");
-    }
+  clearAuthError();
+  const payload = decodeGoogleJwt(response.credential);
+  if (!payload || !payload.email) {
+    showAuthError("Could not decode Google credential. Please try again.");
+    return;
   }
+  await verifyAndLoginUser(payload.email, payload.name, payload.picture);
 }
 
-async function signInWithGoogleQuick(email, name, avatar) {
-  const errBox = document.getElementById("googleAuthError");
-  if (errBox) errBox.classList.add("hidden");
-
-  // Create deterministic simulated Google ID from email
-  const googleId = "gid_" + btoa(email.toLowerCase()).replace(/=/g, "").slice(0, 16);
-
-  try {
-    const res = await fetch("/api/auth/google", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        google_id: googleId,
-        email: email,
-        full_name: name,
-        avatar_url: avatar
-      })
-    });
-
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.detail || "Google sign-in failed");
-    }
-
-    const data = await res.json();
-    authToken = data.token;
-    localStorage.setItem("cardsense_auth_token", authToken);
-    currentUser = data.user;
-    renderAuthUI(currentUser);
-    closeAuthModal();
-
-    await loadUserConfig();
-    await triggerAnalysis();
-  } catch (err) {
-    if (errBox) {
-      errBox.innerText = err.message;
-      errBox.classList.remove("hidden");
-    }
+async function handleDirectGoogleLogin(e) {
+  if (e) e.preventDefault();
+  clearAuthError();
+  const input = document.getElementById("googleEmailInput");
+  const email = (input ? input.value : "").trim();
+  if (!email || !email.includes("@")) {
+    showAuthError("Please enter a valid Gmail address.");
+    return;
   }
+
+  const name = email.split("@")[0].replace(/[._]/g, " ").replace(/\b\w/g, l => l.toUpperCase());
+  await verifyAndLoginUser(email, name, "https://lh3.googleusercontent.com/a/default-user");
 }
 
 function promptCustomGoogleEmail() {
   const email = prompt("Enter your Google Account email (e.g., yourname@gmail.com):");
   if (!email || !email.includes("@")) return;
-
   const name = email.split("@")[0].replace(/[._]/g, " ").replace(/\b\w/g, l => l.toUpperCase());
-  signInWithGoogleQuick(email.trim(), name, "https://lh3.googleusercontent.com/a/default-user");
+  verifyAndLoginUser(email.trim(), name, "https://lh3.googleusercontent.com/a/default-user");
+}
+
+async function signInWithGoogleQuick(email, name, avatar) {
+  await verifyAndLoginUser(email, name, avatar);
+}
+
+async function verifyAndLoginUser(email, name, avatar) {
+  clearAuthError();
+  const submitBtn = document.getElementById("googleEmailSubmitBtn");
+  const origBtnText = submitBtn ? submitBtn.innerText : "Sign In";
+  if (submitBtn) submitBtn.innerText = "Verifying...";
+
+  const cleanEmail = email.toLowerCase().trim();
+
+  // 1. If Google Sheet is configured, verify email against allowed_users allowlist
+  if (googleSheetUrl) {
+    try {
+      const checkRes = await fetch(`${googleSheetUrl}?action=checkAccess&email=${encodeURIComponent(cleanEmail)}`);
+      const checkData = await checkRes.json();
+
+      if (checkData.status !== "success" || !checkData.allowed) {
+        if (submitBtn) submitBtn.innerText = origBtnText;
+        showAuthError(`Access restricted: "${cleanEmail}" is not in the allowed_users list in your Google Sheet.`);
+        return false;
+      }
+    } catch (sheetErr) {
+      console.warn("Could not reach Google Sheet backend:", sheetErr);
+      showAuthError("Could not verify allowlist with Google Sheets. Please ensure your Apps Script is deployed with 'Who has access: Anyone'.");
+      if (submitBtn) submitBtn.innerText = origBtnText;
+      return false;
+    }
+  }
+
+  // 2. If running locally with FastAPI, authenticate to SQLite backend as well
+  if (hasLocalBackend()) {
+    try {
+      const googleId = "gid_" + btoa(cleanEmail).replace(/=/g, "").slice(0, 16);
+      const res = await fetch("/api/auth/google", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          google_id: googleId,
+          email: cleanEmail,
+          full_name: name || cleanEmail.split("@")[0],
+          avatar_url: avatar || "https://lh3.googleusercontent.com/a/default-user"
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        authToken = data.token;
+        localStorage.setItem("cardsense_auth_token", authToken);
+      }
+    } catch (e) {
+      console.warn("Local backend auth optional check failed:", e);
+    }
+  }
+
+  // 3. Set current user session
+  currentUser = {
+    email: cleanEmail,
+    full_name: name || cleanEmail.split("@")[0].replace(/[._]/g, " ").replace(/\b\w/g, l => l.toUpperCase()),
+    avatar_url: avatar || "https://lh3.googleusercontent.com/a/default-user"
+  };
+  localStorage.setItem("cardsense_current_user", JSON.stringify(currentUser));
+
+  renderAuthUI(currentUser);
+  closeAuthModal();
+  if (submitBtn) submitBtn.innerText = origBtnText;
+
+  // 4. Load user configuration from Sheet / DB and re-analyze
+  await loadUserConfig();
+  await triggerAnalysis();
+  return true;
 }
 
 async function handleLogout() {
-  try {
-    await fetch("/api/auth/logout", {
-      method: "POST",
-      headers: getAuthHeaders()
-    });
-  } catch (err) {
-    // Ignore
+  if (authToken && hasLocalBackend()) {
+    try {
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        headers: getAuthHeaders()
+      });
+    } catch (err) {}
   }
   authToken = null;
   currentUser = null;
   localStorage.removeItem("cardsense_auth_token");
+  localStorage.removeItem("cardsense_current_user");
   renderAuthUI(null);
 }
 
-// Load user-specific cards, spend, and weights from SQLite
+// Load user-specific cards, spend, and weights
 async function loadUserConfig() {
-  if (!authToken) return;
+  if (!currentUser || !currentUser.email) return;
 
-  try {
-    const res = await fetch("/api/user/config", {
-      headers: getAuthHeaders()
-    });
+  let config = null;
 
-    if (!res.ok) return;
-
-    const config = await res.json();
-
-    // 1. Restore cards
-    if (config.selected_card_ids && config.selected_card_ids.length > 0) {
-      selectedCardIds = new Set(config.selected_card_ids);
-      renderCardSelectionList();
-    }
-
-    // 2. Restore spend profile
-    if (config.spend_profile && config.spend_profile.monthly_spend) {
-      for (const [catId, val] of Object.entries(config.spend_profile.monthly_spend)) {
-        const input = document.getElementById(`spend_${catId}`);
-        if (input) input.value = val;
+  // 1. Try reading from Google Sheet Web App
+  if (googleSheetUrl) {
+    try {
+      const res = await fetch(`${googleSheetUrl}?action=getConfig&email=${encodeURIComponent(currentUser.email)}`);
+      const data = await res.json();
+      if (data.status === "success" && data.config) {
+        config = data.config;
       }
-      updateSpendTotals();
+    } catch (e) {
+      console.warn("Could not load config from Google Sheet:", e);
     }
+  }
 
-    // 3. Restore weights
-    if (config.weights) {
-      const w = config.weights;
-      if (w.domestic_airport_lounge_multiplier !== undefined) document.getElementById("w_lounge_mult").value = w.domestic_airport_lounge_multiplier;
-      if (w.domestic_airport_lounge_unit_value !== undefined) document.getElementById("w_lounge_val").value = w.domestic_airport_lounge_unit_value;
-      if (w.movie_bogo_multiplier !== undefined) document.getElementById("w_movie_mult").value = w.movie_bogo_multiplier;
-      if (w.movie_bogo_ticket_unit_value !== undefined) document.getElementById("w_movie_val").value = w.movie_bogo_ticket_unit_value;
-      if (w.milestone_travel_voucher_multiplier !== undefined) document.getElementById("w_voucher_mult").value = w.milestone_travel_voucher_multiplier;
-      if (w.golf_round_multiplier !== undefined) document.getElementById("w_golf_mult").value = w.golf_round_multiplier;
-      if (w.golf_round_unit_value !== undefined) document.getElementById("w_golf_val").value = w.golf_round_unit_value;
-      if (w.dining_membership_multiplier !== undefined) document.getElementById("w_dining_mult").value = w.dining_membership_multiplier;
-      if (w.fuel_surcharge_multiplier !== undefined) document.getElementById("w_fuel_mult").value = w.fuel_surcharge_multiplier;
-      updateWeightLabels();
+  // 2. Try reading from local SQLite backend if running
+  if (!config && authToken && hasLocalBackend()) {
+    try {
+      const res = await fetch("/api/user/config", { headers: getAuthHeaders() });
+      if (res.ok) {
+        config = await res.json();
+      }
+    } catch (err) {}
+  }
+
+  // 3. Try reading from localStorage cache
+  if (!config) {
+    const cached = localStorage.getItem(`cardsense_user_config_${currentUser.email}`);
+    if (cached) {
+      try { config = JSON.parse(cached); } catch (e) {}
     }
-  } catch (err) {
-    console.error("Failed to load user config:", err);
+  }
+
+  if (!config) return;
+
+  // Apply user configuration to UI
+  if (config.selected_card_ids && config.selected_card_ids.length > 0) {
+    selectedCardIds = new Set(config.selected_card_ids);
+    renderCardSelectionList();
+  }
+
+  if (config.spend_profile && config.spend_profile.monthly_spend) {
+    for (const [catId, val] of Object.entries(config.spend_profile.monthly_spend)) {
+      const input = document.getElementById(`spend_${catId}`);
+      if (input) input.value = val;
+    }
+    updateSpendTotals();
+  }
+
+  if (config.weights) {
+    const w = config.weights;
+    if (w.domestic_airport_lounge_multiplier !== undefined) document.getElementById("w_lounge_mult").value = w.domestic_airport_lounge_multiplier;
+    if (w.domestic_airport_lounge_unit_value !== undefined) document.getElementById("w_lounge_val").value = w.domestic_airport_lounge_unit_value;
+    if (w.movie_bogo_multiplier !== undefined) document.getElementById("w_movie_mult").value = w.movie_bogo_multiplier;
+    if (w.movie_bogo_ticket_unit_value !== undefined) document.getElementById("w_movie_val").value = w.movie_bogo_ticket_unit_value;
+    if (w.milestone_travel_voucher_multiplier !== undefined) document.getElementById("w_voucher_mult").value = w.milestone_travel_voucher_multiplier;
+    if (w.golf_round_multiplier !== undefined) document.getElementById("w_golf_mult").value = w.golf_round_multiplier;
+    if (w.golf_round_unit_value !== undefined) document.getElementById("w_golf_val").value = w.golf_round_unit_value;
+    if (w.dining_membership_multiplier !== undefined) document.getElementById("w_dining_mult").value = w.dining_membership_multiplier;
+    if (w.fuel_surcharge_multiplier !== undefined) document.getElementById("w_fuel_mult").value = w.fuel_surcharge_multiplier;
+    updateWeightLabels();
   }
 }
 
-// Save current state to user's Google Sheet or SQLite backend
+// Save current state to user's Google Sheet or local backend
 async function saveCurrentProfileToDb() {
-  if (!authToken && !currentUser) {
+  if (!currentUser) {
     openAuthModal();
     return;
   }
@@ -332,11 +421,13 @@ async function saveCurrentProfileToDb() {
     weights: getWeightsPayload()
   };
 
-  let savedToSheet = false;
-  let savedToDb = false;
+  // Cache locally in browser
+  localStorage.setItem(`cardsense_user_config_${currentUser.email}`, JSON.stringify(payload));
 
-  // 1. Sync to Google Sheet if configured
-  if (googleSheetUrl && currentUser && currentUser.email) {
+  let savedToSheet = false;
+
+  // 1. Sync to Google Sheet Web App if configured
+  if (googleSheetUrl && currentUser.email) {
     try {
       const sheetPayload = {
         action: "saveConfig",
@@ -355,16 +446,15 @@ async function saveCurrentProfileToDb() {
     }
   }
 
-  // 2. Sync to SQLite backend if running
-  try {
-    const res = await fetch("/api/user/config", {
-      method: "POST",
-      headers: getAuthHeaders(),
-      body: JSON.stringify(payload)
-    });
-    if (res.ok) savedToDb = true;
-  } catch (dbErr) {
-    // Ignore if running 100% serverless
+  // 2. Sync to SQLite backend if running locally
+  if (hasLocalBackend() && authToken) {
+    try {
+      await fetch("/api/user/config", {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(payload)
+      });
+    } catch (dbErr) {}
   }
 
   // Provide user feedback
@@ -475,19 +565,43 @@ function applyPreset(presetKey) {
 
 async function loadCatalog() {
   try {
-    let res = null;
+    let loaded = false;
+
+    // 1. If running on local dev server, try FastAPI catalog endpoint
+    if (hasLocalBackend()) {
+      try {
+        const res = await fetch("/api/catalog");
+        if (res.ok) {
+          catalogData = await res.json();
+          loaded = true;
+        }
+      } catch (e) {}
+    }
+
+    // 2. Serverless / GitHub Pages mode: fetch ./data/catalog.json directly
+    if (!loaded) {
+      const res = await fetch("./data/catalog.json");
+      if (!res.ok) {
+        throw new Error(`Failed to load catalog data (HTTP ${res.status})`);
+      }
+      catalogData = await res.json();
+    }
+
+    // Restore any custom cards saved in localStorage
     try {
-      res = await fetch("/api/catalog");
-    } catch (e) {
-      // Backend not running, load static data
-    }
+      const savedCustom = localStorage.getItem("cardsense_custom_cards");
+      if (savedCustom) {
+        const customList = JSON.parse(savedCustom);
+        if (Array.isArray(customList)) {
+          customList.forEach(c => {
+            if (!catalogData.cards.some(existing => existing.id === c.id)) {
+              catalogData.cards.push(c);
+            }
+          });
+        }
+      }
+    } catch (e) {}
 
-    if (!res || !res.ok) {
-      // Fallback for GitHub Pages static hosting
-      res = await fetch("./data/catalog.json");
-    }
-
-    catalogData = await res.json();
     populateBankFilter();
     document.getElementById("totalCardsCount").innerText = catalogData.cards.length;
 
@@ -694,70 +808,83 @@ async function triggerAnalysis() {
   if (spinner) spinner.classList.remove("hidden");
   if (runIcon) runIcon.classList.add("hidden");
 
-  // 1. If in-browser calculation engine is ready, compute instantly (0ms latency, GitHub Pages ready)
+  const spendProfile = getSpendProfilePayload();
+  const weights = getWeightsPayload();
+
+  // 1. Instant in-browser calculation engine (GitHub Pages serverless execution, 0ms latency)
   if (clientEngine && catalogData.cards.length > 0) {
     try {
-      const selectedCards = catalogData.cards.filter(c => selectedCardIds.has(c.id));
-      const spendProfile = getSpendProfilePayload();
-      const weights = getWeightsPayload();
+      if (typeof clientEngine.runAnalysis === "function") {
+        currentAnalysisResult = clientEngine.runAnalysis(
+          Array.from(selectedCardIds),
+          spendProfile,
+          weights
+        );
+      } else {
+        const selectedCards = catalogData.cards.filter(c => selectedCardIds.has(c.id));
+        const { cardsSummary, routingInfo } = clientEngine.analyzePortfolio(selectedCards, spendProfile, weights);
+        const gaps = clientEngine.analyzeGaps(selectedCards, cardsSummary, spendProfile, routingInfo, weights);
+        const recs = clientEngine.generateRecommendations(selectedCards, cardsSummary, spendProfile, gaps, weights);
 
-      const { cardsSummary, routingInfo } = clientEngine.analyzePortfolio(selectedCards, spendProfile, weights);
-      const gaps = clientEngine.analyzeGaps(selectedCards, cardsSummary, spendProfile, routingInfo, weights);
-      const recs = clientEngine.generateRecommendations(selectedCards, cardsSummary, spendProfile, gaps, weights);
+        const totSpend = Object.values(spendProfile.monthly_spend).reduce((a, b) => a + (Number(b) || 0), 0) * 12.0;
+        const totRewards = cardsSummary.reduce((acc, q) => acc + q.total_rewards_earned, 0);
+        const totPerks = cardsSummary.reduce((acc, q) => acc + q.total_perk_value, 0);
+        const totFees = cardsSummary.reduce((acc, q) => acc + q.effective_annual_fee, 0);
+        const netVal = cardsSummary.reduce((acc, q) => acc + q.net_value, 0);
+        const netYield = totSpend > 0 ? (netVal / totSpend * 100.0) : 0.0;
 
-      const totSpend = Object.values(spendProfile.monthly_spend).reduce((a, b) => a + b, 0) * 12.0;
-      const totRewards = cardsSummary.reduce((acc, q) => acc + q.total_rewards_earned, 0);
-      const totPerks = cardsSummary.reduce((acc, q) => acc + q.total_perk_value, 0);
-      const totFees = cardsSummary.reduce((acc, q) => acc + q.effective_annual_fee, 0);
-      const netVal = cardsSummary.reduce((acc, q) => acc + q.net_value, 0);
-      const netYield = totSpend > 0 ? (netVal / totSpend * 100.0) : 0.0;
-
-      currentAnalysisResult = {
-        total_annual_spend: Number(totSpend.toFixed(2)),
-        total_annual_rewards: Number(totRewards.toFixed(2)),
-        total_perk_value: Number(totPerks.toFixed(2)),
-        total_fees_paid: Number(totFees.toFixed(2)),
-        net_annual_value: Number(netVal.toFixed(2)),
-        net_portfolio_yield_percent: Number(netYield.toFixed(2)),
-        best_spend_routing: routingInfo,
-        cards_summary: cardsSummary,
-        gaps: gaps,
-        recommendations: recs
-      };
+        currentAnalysisResult = {
+          total_annual_spend: Number(totSpend.toFixed(2)),
+          total_annual_rewards: Number(totRewards.toFixed(2)),
+          total_perk_value: Number(totPerks.toFixed(2)),
+          total_fees_paid: Number(totFees.toFixed(2)),
+          net_annual_value: Number(netVal.toFixed(2)),
+          net_portfolio_yield_percent: Number(netYield.toFixed(2)),
+          best_spend_routing: routingInfo,
+          cards_summary: cardsSummary,
+          gaps: gaps,
+          recommendations: recs
+        };
+      }
 
       renderAnalysisOutput(currentAnalysisResult);
       if (spinner) spinner.classList.add("hidden");
       if (runIcon) runIcon.classList.remove("hidden");
       return;
     } catch (clientErr) {
-      console.warn("Client engine fallback to API:", clientErr);
+      console.warn("Client engine execution warning:", clientErr);
     }
   }
 
-  // 2. Fallback to API endpoint
-  const payload = {
-    selected_card_ids: Array.from(selectedCardIds),
-    spend_profile: getSpendProfilePayload(),
-    weights: getWeightsPayload()
-  };
+  // 2. Fallback to API endpoint only if running with local FastAPI backend
+  if (hasLocalBackend()) {
+    try {
+      const payload = {
+        selected_card_ids: Array.from(selectedCardIds),
+        spend_profile: spendProfile,
+        weights: weights
+      };
 
-  try {
-    const res = await fetch("/api/analyze", {
-      method: "POST",
-      headers: getAuthHeaders(),
-      body: JSON.stringify(payload)
-    });
+      const res = await fetch("/api/analyze", {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(payload)
+      });
 
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.detail || "Analysis failed");
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ detail: "Analysis failed" }));
+        throw new Error(err.detail || "Analysis failed");
+      }
+
+      currentAnalysisResult = await res.json();
+      renderAnalysisOutput(currentAnalysisResult);
+    } catch (err) {
+      alert(`Error: ${err.message}`);
+    } finally {
+      if (spinner) spinner.classList.add("hidden");
+      if (runIcon) runIcon.classList.remove("hidden");
     }
-
-    currentAnalysisResult = await res.json();
-    renderAnalysisOutput(currentAnalysisResult);
-  } catch (err) {
-    alert(`Error: ${err.message}`);
-  } finally {
+  } else {
     if (spinner) spinner.classList.add("hidden");
     if (runIcon) runIcon.classList.remove("hidden");
   }
@@ -1176,22 +1303,49 @@ async function saveCustomCard(e) {
     key_highlights: [`Custom User Card: ${name}`]
   };
 
+  // Add to local catalog and storage
+  catalogData.cards.push(cardPayload);
   try {
-    const res = await fetch("/api/cards", {
-      method: "POST",
-      headers: getAuthHeaders(),
-      body: JSON.stringify(cardPayload)
-    });
+    const savedCustom = JSON.parse(localStorage.getItem("cardsense_custom_cards") || "[]");
+    savedCustom.push(cardPayload);
+    localStorage.setItem("cardsense_custom_cards", JSON.stringify(savedCustom));
+  } catch (e) {}
 
-    if (!res.ok) throw new Error("Failed to save custom card");
-
-    await loadCatalog();
-    selectedCardIds.add(id);
-    renderCardSelectionList();
-    renderFullCatalog();
-    closeCustomCardModal();
-    triggerAnalysis();
-  } catch (err) {
-    alert(`Error: ${err.message}`);
+  // Sync to Google Sheet if configured
+  if (googleSheetUrl && currentUser && currentUser.email) {
+    try {
+      fetch(googleSheetUrl, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify({
+          action: "saveCustomCard",
+          email: currentUser.email,
+          card: cardPayload
+        })
+      });
+    } catch (e) {}
   }
+
+  // Sync to local FastAPI backend if running
+  if (hasLocalBackend()) {
+    try {
+      await fetch("/api/cards", {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(cardPayload)
+      });
+    } catch (err) {}
+  }
+
+  // Update client engine
+  if (typeof ClientCreditCardEngine !== "undefined") {
+    clientEngine = new ClientCreditCardEngine(catalogData.cards, catalogData.categories);
+  }
+
+  selectedCardIds.add(id);
+  renderCardSelectionList();
+  renderFullCatalog();
+  closeCustomCardModal();
+  triggerAnalysis();
 }
