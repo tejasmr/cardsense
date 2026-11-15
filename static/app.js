@@ -112,9 +112,6 @@ async function checkAuthStatus() {
   renderAuthUI(null);
 }
 
-  renderAuthUI(null);
-}
-
 function renderAuthUI(user) {
   const loginBtn = document.getElementById("loginBtn");
   const userWidget = document.getElementById("userLoggedInWidget");
