@@ -85,16 +85,26 @@ function decodeGoogleJwt(token) {
 }
 
 function showAuthError(msg) {
-  const errBox = document.getElementById("googleAuthError");
-  if (errBox) {
-    errBox.innerText = msg;
-    errBox.classList.remove("hidden");
-  }
+  const errBoxes = [
+    document.getElementById("googleAuthError"),
+    document.getElementById("gateAuthError")
+  ];
+  errBoxes.forEach(box => {
+    if (box) {
+      box.innerText = msg;
+      box.classList.remove("hidden");
+    }
+  });
 }
 
 function clearAuthError() {
-  const errBox = document.getElementById("googleAuthError");
-  if (errBox) errBox.classList.add("hidden");
+  const errBoxes = [
+    document.getElementById("googleAuthError"),
+    document.getElementById("gateAuthError")
+  ];
+  errBoxes.forEach(box => {
+    if (box) box.classList.add("hidden");
+  });
 }
 
 // --- Auth & User Profile Functions ---
@@ -113,6 +123,8 @@ async function checkAuthStatus() {
 }
 
 function renderAuthUI(user) {
+  const gate = document.getElementById("accessGate");
+  const dashboard = document.getElementById("protectedDashboard");
   const loginBtn = document.getElementById("loginBtn");
   const userWidget = document.getElementById("userLoggedInWidget");
   const userNameDisplay = document.getElementById("userNameDisplay");
@@ -121,6 +133,10 @@ function renderAuthUI(user) {
   const userAvatarFallback = document.getElementById("userAvatarFallback");
 
   if (user) {
+    // Unlock dashboard, hide gate
+    if (gate) gate.classList.add("hidden");
+    if (dashboard) dashboard.classList.remove("hidden");
+
     if (loginBtn) loginBtn.classList.add("hidden");
     if (userWidget) userWidget.classList.remove("hidden");
     if (userNameDisplay) userNameDisplay.innerText = user.full_name || user.email.split("@")[0];
@@ -136,6 +152,10 @@ function renderAuthUI(user) {
       if (userAvatarImg) userAvatarImg.classList.add("hidden");
     }
   } else {
+    // Lock dashboard, show gate
+    if (gate) gate.classList.remove("hidden");
+    if (dashboard) dashboard.classList.add("hidden");
+
     if (loginBtn) loginBtn.classList.remove("hidden");
     if (userWidget) userWidget.classList.add("hidden");
     if (userNameDisplay) userNameDisplay.innerText = "";
@@ -168,10 +188,26 @@ function initGoogleIdentity() {
         client_id: clientId,
         callback: handleGoogleCredentialResponse
       });
-      const container = document.getElementById("googleSignInButtonContainer");
-      if (container) {
-        container.innerHTML = "";
-        google.accounts.id.renderButton(container, {
+
+      // 1. Render Google button on Access Gate (Lock Screen)
+      const gateContainer = document.getElementById("gateGoogleSignInContainer");
+      if (gateContainer) {
+        gateContainer.innerHTML = "";
+        google.accounts.id.renderButton(gateContainer, {
+          theme: "outline",
+          size: "large",
+          type: "standard",
+          shape: "pill",
+          text: "signin_with",
+          width: 280
+        });
+      }
+
+      // 2. Render Google button inside Auth Modal
+      const modalContainer = document.getElementById("googleSignInButtonContainer");
+      if (modalContainer) {
+        modalContainer.innerHTML = "";
+        google.accounts.id.renderButton(modalContainer, {
           theme: "outline",
           size: "large",
           type: "standard",
@@ -196,54 +232,23 @@ async function handleGoogleCredentialResponse(response) {
   await verifyAndLoginUser(payload.email, payload.name, payload.picture);
 }
 
-async function handleDirectGoogleLogin(e) {
-  if (e) e.preventDefault();
-  clearAuthError();
-  const input = document.getElementById("googleEmailInput");
-  const email = (input ? input.value : "").trim();
-  if (!email || !email.includes("@")) {
-    showAuthError("Please enter a valid Gmail address.");
-    return;
-  }
-
-  const name = email.split("@")[0].replace(/[._]/g, " ").replace(/\b\w/g, l => l.toUpperCase());
-  await verifyAndLoginUser(email, name, "https://lh3.googleusercontent.com/a/default-user");
-}
-
-function promptCustomGoogleEmail() {
-  const email = prompt("Enter your Google Account email (e.g., yourname@gmail.com):");
-  if (!email || !email.includes("@")) return;
-  const name = email.split("@")[0].replace(/[._]/g, " ").replace(/\b\w/g, l => l.toUpperCase());
-  verifyAndLoginUser(email.trim(), name, "https://lh3.googleusercontent.com/a/default-user");
-}
-
-async function signInWithGoogleQuick(email, name, avatar) {
-  await verifyAndLoginUser(email, name, avatar);
-}
-
 async function verifyAndLoginUser(email, name, avatar) {
   clearAuthError();
-  const submitBtn = document.getElementById("googleEmailSubmitBtn");
-  const origBtnText = submitBtn ? submitBtn.innerText : "Sign In";
-  if (submitBtn) submitBtn.innerText = "Verifying...";
-
   const cleanEmail = email.toLowerCase().trim();
 
-  // 1. If Google Sheet is configured, verify email against allowed_users allowlist
+  // 1. Verify email against allowed_users allowlist in Google Sheet
   if (googleSheetUrl) {
     try {
       const checkRes = await fetch(`${googleSheetUrl}?action=checkAccess&email=${encodeURIComponent(cleanEmail)}`);
       const checkData = await checkRes.json();
 
       if (checkData.status !== "success" || !checkData.allowed) {
-        if (submitBtn) submitBtn.innerText = origBtnText;
         showAuthError(`Access restricted: "${cleanEmail}" is not in the allowed_users list in your Google Sheet.`);
         return false;
       }
     } catch (sheetErr) {
       console.warn("Could not reach Google Sheet backend:", sheetErr);
       showAuthError("Could not verify allowlist with Google Sheets. Please ensure your Apps Script is deployed with 'Who has access: Anyone'.");
-      if (submitBtn) submitBtn.innerText = origBtnText;
       return false;
     }
   }

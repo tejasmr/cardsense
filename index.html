@@ -36,8 +36,32 @@
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans antialiased">
 
-  <!-- Header -->
-  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
+  <!-- Private Access Gate (Shown when not authenticated) -->
+  <div id="accessGate" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-8 shadow-2xl border border-white/20 text-center space-y-6">
+      <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center text-white shadow-lg shadow-indigo-300">
+        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+      </div>
+
+      <div>
+        <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">CardSense India</h2>
+        <p class="text-xs font-semibold text-indigo-600 uppercase tracking-wider mt-1">Private Access Only</p>
+        <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+          This dashboard is strictly private. Sign in with your authorized Google account to view and analyze credit cards.
+        </p>
+      </div>
+
+      <!-- Official Google Sign-in Button -->
+      <div id="gateGoogleSignInContainer" class="flex justify-center min-h-[44px]"></div>
+
+      <div id="gateAuthError" class="hidden text-xs text-rose-700 bg-rose-50 border border-rose-200 p-3 rounded-xl font-semibold text-left"></div>
+    </div>
+  </div>
+
+  <!-- Protected Dashboard (Shown ONLY after authorized Google login) -->
+  <div id="protectedDashboard" class="hidden min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center text-white shadow-md shadow-indigo-200">
@@ -546,40 +570,12 @@
           Sign in with your Google account to sync your credit cards, monthly spend profile, and perk weights to your private Google Sheet.
         </p>
 
-        <!-- Google Identity Services Render Target (if Client ID configured) -->
+        <!-- Official Google Sign-In Button -->
         <div id="googleSignInButtonContainer" class="flex justify-center min-h-[44px]">
-          <!-- Injected via Google Identity Services if client ID exists -->
+          <!-- Injected via Google Identity Services -->
         </div>
 
         <div id="googleAuthError" class="hidden text-[11px] text-rose-600 font-semibold p-2.5 bg-rose-50 rounded-lg text-left"></div>
-
-        <!-- Direct Email Sign-in Form -->
-        <form onsubmit="handleDirectGoogleLogin(event)" class="space-y-2 text-left">
-          <label class="block text-[11px] font-semibold text-slate-700">Enter Your Google Account Email</label>
-          <div class="flex gap-2">
-            <input type="email" id="googleEmailInput" required placeholder="your.email@gmail.com" class="flex-1 px-3 py-2 text-xs border border-slate-200 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-indigo-500 bg-slate-50">
-            <button type="submit" id="googleEmailSubmitBtn" class="px-3.5 py-2 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-colors">Sign In</button>
-          </div>
-          <p class="text-[10px] text-slate-400 leading-relaxed">
-            Restricted access: Access is verified against the <span class="font-mono text-indigo-600 bg-indigo-50 px-1 py-0.5 rounded">allowed_users</span> tab in your Google Sheet.
-          </p>
-        </form>
-
-        <!-- 1-Click Fast Preview Options -->
-        <div class="pt-3 border-t border-slate-100 space-y-2">
-          <span class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider text-left">Quick Demo Login</span>
-          
-          <button type="button" onclick="signInWithGoogleQuick('demo.user@gmail.com', 'Demo User', 'https://lh3.googleusercontent.com/a/default-user')" class="w-full py-2 px-3 rounded-xl bg-slate-50 hover:bg-indigo-50/60 border border-slate-200 hover:border-indigo-200 transition-colors flex items-center justify-between text-left">
-            <div class="flex items-center gap-2.5">
-              <div class="w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-xs flex items-center justify-center">D</div>
-              <div>
-                <span class="block text-xs font-bold text-slate-900">Demo User</span>
-                <span class="block text-[10px] text-slate-400">demo.user@gmail.com</span>
-              </div>
-            </div>
-            <span class="text-[10px] font-bold text-indigo-600">Preview &rarr;</span>
-          </button>
-        </div>
       </div>
     </div>
   </div>
@@ -755,6 +751,7 @@
   <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-400 mt-auto">
     CardSense India Domestic Credit Card Optimization & Gap Analysis Engine &bull; Serverless with Google Sheets Backend
   </footer>
+  </div>
 
   <script src="./static/config.js"></script>
   <script src="./static/engine.js"></script>
