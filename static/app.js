@@ -10,7 +10,6 @@ let selectedCardIds = new Set(["sbi_cashback", "icici_amazon_pay", "axis_airtel"
 let spendInputs = {};
 let currentAnalysisResult = null;
 let currentUser = null;
-let authToken = localStorage.getItem("cardsense_auth_token") || null;
 let clientEngine = null;
 
 // Configured Google Sheet Web App Backend (Priority: 1. localStorage -> 2. Repo secret from config.js -> 3. empty)
@@ -67,12 +66,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   await triggerAnalysis();
 });
 
-// --- Environment & Helper Functions ---
-
-function hasLocalBackend() {
-  const host = window.location.hostname;
-  return (host === "localhost" || host === "127.0.0.1") && (window.location.port === "8000" || window.location.port === "3000");
-}
+// --- Helper Functions ---
 
 function decodeGoogleJwt(token) {
   try {
@@ -105,16 +99,7 @@ function clearAuthError() {
 
 // --- Auth & User Profile Functions ---
 
-function getAuthHeaders() {
-  const headers = { "Content-Type": "application/json" };
-  if (authToken) {
-    headers["Authorization"] = `Bearer ${authToken}`;
-  }
-  return headers;
-}
-
 async function checkAuthStatus() {
-  // 1. Check local session
   const savedUser = localStorage.getItem("cardsense_current_user");
   if (savedUser) {
     try {
@@ -124,20 +109,8 @@ async function checkAuthStatus() {
       return;
     } catch (e) {}
   }
-
-  // 2. If running with local FastAPI backend, check /api/auth/me
-  if (authToken && hasLocalBackend()) {
-    try {
-      const res = await fetch("/api/auth/me", { headers: getAuthHeaders() });
-      if (res.ok) {
-        currentUser = await res.json();
-        localStorage.setItem("cardsense_current_user", JSON.stringify(currentUser));
-        renderAuthUI(currentUser);
-        await loadUserConfig();
-        return;
-      }
-    } catch (err) {}
-  }
+  renderAuthUI(null);
+}
 
   renderAuthUI(null);
 }
@@ -278,31 +251,7 @@ async function verifyAndLoginUser(email, name, avatar) {
     }
   }
 
-  // 2. If running locally with FastAPI, authenticate to SQLite backend as well
-  if (hasLocalBackend()) {
-    try {
-      const googleId = "gid_" + btoa(cleanEmail).replace(/=/g, "").slice(0, 16);
-      const res = await fetch("/api/auth/google", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          google_id: googleId,
-          email: cleanEmail,
-          full_name: name || cleanEmail.split("@")[0],
-          avatar_url: avatar || "https://lh3.googleusercontent.com/a/default-user"
-        })
-      });
-      if (res.ok) {
-        const data = await res.json();
-        authToken = data.token;
-        localStorage.setItem("cardsense_auth_token", authToken);
-      }
-    } catch (e) {
-      console.warn("Local backend auth optional check failed:", e);
-    }
-  }
-
-  // 3. Set current user session
+  // 2. Set current user session
   currentUser = {
     email: cleanEmail,
     full_name: name || cleanEmail.split("@")[0].replace(/[._]/g, " ").replace(/\b\w/g, l => l.toUpperCase()),
@@ -314,24 +263,14 @@ async function verifyAndLoginUser(email, name, avatar) {
   closeAuthModal();
   if (submitBtn) submitBtn.innerText = origBtnText;
 
-  // 4. Load user configuration from Sheet / DB and re-analyze
+  // 3. Load user configuration from Sheet and re-analyze
   await loadUserConfig();
   await triggerAnalysis();
   return true;
 }
 
-async function handleLogout() {
-  if (authToken && hasLocalBackend()) {
-    try {
-      await fetch("/api/auth/logout", {
-        method: "POST",
-        headers: getAuthHeaders()
-      });
-    } catch (err) {}
-  }
-  authToken = null;
+function handleLogout() {
   currentUser = null;
-  localStorage.removeItem("cardsense_auth_token");
   localStorage.removeItem("cardsense_current_user");
   renderAuthUI(null);
 }
@@ -355,17 +294,7 @@ async function loadUserConfig() {
     }
   }
 
-  // 2. Try reading from local SQLite backend if running
-  if (!config && authToken && hasLocalBackend()) {
-    try {
-      const res = await fetch("/api/user/config", { headers: getAuthHeaders() });
-      if (res.ok) {
-        config = await res.json();
-      }
-    } catch (err) {}
-  }
-
-  // 3. Try reading from localStorage cache
+  // 2. Try reading from localStorage cache
   if (!config) {
     const cached = localStorage.getItem(`cardsense_user_config_${currentUser.email}`);
     if (cached) {
@@ -444,17 +373,6 @@ async function saveCurrentProfileToDb() {
     } catch (sheetErr) {
       console.warn("Failed to sync to Google Sheet:", sheetErr);
     }
-  }
-
-  // 2. Sync to SQLite backend if running locally
-  if (hasLocalBackend() && authToken) {
-    try {
-      await fetch("/api/user/config", {
-        method: "POST",
-        headers: getAuthHeaders(),
-        body: JSON.stringify(payload)
-      });
-    } catch (dbErr) {}
   }
 
   // Provide user feedback
@@ -565,27 +483,11 @@ function applyPreset(presetKey) {
 
 async function loadCatalog() {
   try {
-    let loaded = false;
-
-    // 1. If running on local dev server, try FastAPI catalog endpoint
-    if (hasLocalBackend()) {
-      try {
-        const res = await fetch("/api/catalog");
-        if (res.ok) {
-          catalogData = await res.json();
-          loaded = true;
-        }
-      } catch (e) {}
+    const res = await fetch("./data/catalog.json");
+    if (!res.ok) {
+      throw new Error(`Failed to load catalog data (HTTP ${res.status})`);
     }
-
-    // 2. Serverless / GitHub Pages mode: fetch ./data/catalog.json directly
-    if (!loaded) {
-      const res = await fetch("./data/catalog.json");
-      if (!res.ok) {
-        throw new Error(`Failed to load catalog data (HTTP ${res.status})`);
-      }
-      catalogData = await res.json();
-    }
+    catalogData = await res.json();
 
     // Restore any custom cards saved in localStorage
     try {
@@ -856,38 +758,8 @@ async function triggerAnalysis() {
     }
   }
 
-  // 2. Fallback to API endpoint only if running with local FastAPI backend
-  if (hasLocalBackend()) {
-    try {
-      const payload = {
-        selected_card_ids: Array.from(selectedCardIds),
-        spend_profile: spendProfile,
-        weights: weights
-      };
-
-      const res = await fetch("/api/analyze", {
-        method: "POST",
-        headers: getAuthHeaders(),
-        body: JSON.stringify(payload)
-      });
-
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({ detail: "Analysis failed" }));
-        throw new Error(err.detail || "Analysis failed");
-      }
-
-      currentAnalysisResult = await res.json();
-      renderAnalysisOutput(currentAnalysisResult);
-    } catch (err) {
-      alert(`Error: ${err.message}`);
-    } finally {
-      if (spinner) spinner.classList.add("hidden");
-      if (runIcon) runIcon.classList.remove("hidden");
-    }
-  } else {
-    if (spinner) spinner.classList.add("hidden");
-    if (runIcon) runIcon.classList.remove("hidden");
-  }
+  if (spinner) spinner.classList.add("hidden");
+  if (runIcon) runIcon.classList.remove("hidden");
 }
 
 function renderAnalysisOutput(result) {
@@ -1325,17 +1197,6 @@ async function saveCustomCard(e) {
         })
       });
     } catch (e) {}
-  }
-
-  // Sync to local FastAPI backend if running
-  if (hasLocalBackend()) {
-    try {
-      await fetch("/api/cards", {
-        method: "POST",
-        headers: getAuthHeaders(),
-        body: JSON.stringify(cardPayload)
-      });
-    } catch (err) {}
   }
 
   // Update client engine

@@ -2,7 +2,7 @@
 
 A comprehensive, mathematically rigorous credit card benefit and cost quantification engine built for the **Indian Domestic Credit Card market (INR)**.
 
-It models **best-behavior cardholder spending**, quantifies rewards, milestone vouchers, non-cash perks, annual fees (including **18% GST**), spend-based fee waivers, and detects portfolio gaps with smart card addition and replacement recommendations.
+Hosted **100% serverless on GitHub Pages** and backed privately by your own **Google Sheet database via Google Apps Script**.
 
 ---
 
@@ -11,7 +11,7 @@ It models **best-behavior cardholder spending**, quantifies rewards, milestone v
 ### 1. "Best Behavior" Spend Routing Engine
 * **Optimal Category Allocation**: Simulates an informed user routing each domestic spend category to the highest-yielding card in their portfolio.
 * **Monthly Reward Caps & Spillover**: Respects category-specific caps (e.g., Swiggy HDFC ₹1,500/mo cap, SBI Cashback ₹5,000/mo limit) and automatically diverts spillover spend to the second-best card.
-* **18% GST on Fees**: Factors in Indian GST regulations (18% on annual and joining fees).
+* **18% GST on Fees**: Factors in Indian GST regulations (18% on annual and renewal fees).
 * **Spend-Based Fee Waivers**: Automatically eliminates annual renewal fees when allocated annual spend meets or exceeds the card's waiver threshold (e.g. ₹2,00,000 on SBI Cashback / Airtel Axis).
 * **Milestone Rewards Optimization**: Triggers milestone rewards (e.g. Amex Platinum Travel ₹4L spend yielding ₹10k Taj voucher + ₹10k IndiGo flight vouchers + 40k MR points; Regalia Gold quarterly vouchers).
 
@@ -40,21 +40,10 @@ It models **best-behavior cardholder spending**, quantifies rewards, milestone v
 * Suggests replacements for negative ROI or underutilized cards.
 * 1-Click "Add to Portfolio" or "Swap Cards" in the web dashboard.
 
-### 5. SQLite Database & User-Level Configuration (Google OAuth Exclusive)
-* **Exclusive Sign-In with Google**:
-  * All user accounts and sessions are authenticated strictly via Google Identity.
-  * Supports Google Identity Services (GIS) One Tap / button with client-side credential verification.
-  * Extensible with environment variable `GOOGLE_CLIENT_ID`.
-  * Pre-configured with quick Google test user profiles for local testing.
-* **Relational SQLite Storage (`data/cc_analysis.db`)**:
-  * `users`: Stores Google account data (`google_id`, `email`, `full_name`, `avatar_url`, `created_at`).
-  * `sessions`: Token-based session management (`Bearer <token>`).
-  * `cards`: Relational database catalog of domestic cards with JSON attributes.
-  * `user_portfolios`: Stores active user cards with custom display order.
-  * `user_spend_profiles`: Persists user-defined monthly category spends.
-  * `user_perk_weights`: Persists custom valuations and multipliers per user.
-* **1-Click "Save to DB"**: Syncs your custom card selection, spend breakdown, and perk weights directly to your SQLite profile.
-* **Authenticated Analysis (`POST /api/user/analyze`)**: Runs complete portfolio optimization directly on your saved profile in the database.
+### 5. Private Google Sheets Backend with Email Allowlist
+* **Zero Hosting Costs**: Completely free, hosted directly via GitHub Pages and Google Apps Script.
+* **Strict Allowlist Security**: Access is restricted strictly to emails you add in the `allowed_users` tab of your Google Sheet.
+* **Cloud Sync**: Save and sync custom card selections, monthly spend breakdowns, and perk weights to your Google Sheet.
 
 ---
 
@@ -71,52 +60,47 @@ Pre-loaded with verified data:
 
 ---
 
-## Quick Start
+## Deployment & Setup
 
-### 1. Requirements
-* Python 3.10+ (Tested on Python 3.14)
-* Packages: `fastapi`, `uvicorn`, `pydantic`, `pytest`
+### 1. Google Sheets Backend Setup
+1. Create a new Google Sheet named **`CardSense_DB`**.
+2. Go to **Extensions** &rarr; **Apps Script**.
+3. Paste the contents of [`google_sheets_backend/Code.gs`](google_sheets_backend/Code.gs) into `Code.gs`.
+4. Run `setupSpreadsheet` once from the Apps Script editor to initialize the tabs (`allowed_users`, `user_configs`, `custom_cards`).
+5. In the `allowed_users` tab of your Google Sheet, add the Gmail address(es) you want to permit.
+6. Click **Deploy** &rarr; **New deployment**:
+   - **Type**: Web app
+   - **Execute as**: Me
+   - **Who has access**: Anyone *(essential for GitHub Pages cross-origin sync; your script verifies email against `allowed_users`)*
+7. Copy the generated Web App URL (`.../exec`).
 
-### 2. Run the Dashboard
-```bash
-python run.py
-```
-Open your browser to:
-```
-http://127.0.0.1:8000
-```
-*(Note: To allow access from external browser on Windows if running in an isolated environment, run with standard network access).*
-
-### 3. Run Automated Tests
-```bash
-python -m pytest
-```
+### 2. GitHub Pages Deployment
+1. In your GitHub repository, go to **Settings** &rarr; **Secrets and variables** &rarr; **Actions**.
+2. Add a repository secret named **`GOOGLE_SHEET_URL`** with your Apps Script Web App URL.
+3. Under **Settings** &rarr; **Pages**, set **Source** to **GitHub Actions**.
+4. Push to `main` branch — GitHub Actions will automatically inject the secret into `config.js` and deploy your site!
 
 ---
 
 ## Project Structure
 ```
 cc_analysis/
+├── .github/
+│   └── workflows/
+│       └── deploy.yml          # GitHub Actions deployment to GitHub Pages
 ├── data/
-│   ├── cards.json           # Verified Indian domestic credit card database
-│   ├── categories.json      # Domestic spend categories and benchmark rates
-│   └── default_perks.json   # Default benchmark monetary values for non-cash perks
-├── src/
-│   ├── models.py            # Pydantic data models
-│   ├── engine.py            # Best-behavior optimization & calculation engine
-│   ├── gap_analyzer.py      # Category, perk, and fee inefficiency analyzer
-│   ├── recommender.py       # Portfolio addition & replacement recommender
-│   └── api.py               # FastAPI backend & REST endpoints
+│   ├── catalog.json            # Pre-bundled offline card database
+│   ├── cards.json              # Source card definitions
+│   ├── categories.json         # Domestic spend categories & benchmarks
+│   └── default_perks.json      # Benchmark values for non-cash perks
+├── google_sheets_backend/
+│   └── Code.gs                 # Google Apps Script Web App backend
 ├── static/
-│   ├── index.html           # Modern responsive dashboard UI
-│   ├── app.js               # Reactive frontend logic & dynamic portfolio updating
-│   └── style.css            # Custom UI styles
-├── tests/
-│   ├── test_engine.py       # Engine calculation & fee waiver tests
-│   ├── test_gap_analyzer.py # Gap detection & recommender tests
-│   └── test_api.py          # API endpoint tests
-├── .gitignore               # Standard Python & IDE ignore patterns
-├── pytest.ini               # Pytest configuration
-├── requirements.txt         # Dependencies
-└── run.py                   # Application launcher
+│   ├── app.js                  # Frontend application logic & Sheet sync
+│   ├── config.js               # Deployment secret injection template
+│   ├── engine.js               # In-browser JavaScript calculation engine
+│   └── style.css               # UI styling & animations
+├── .gitignore                  # Git ignore rules
+├── index.html                  # Single-page web dashboard
+└── README.md                   # Documentation
 ```
